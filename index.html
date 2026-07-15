@@ -18,12 +18,15 @@
     --panel:#1e1e22;
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;
+  html,body{margin:0;padding:0;width:100%;
     font-family:"Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
     background:#121215; color:var(--ink);}
   button{font-family:inherit;}
 
-  #app{position:fixed;inset:0;display:flex;flex-direction:column;}
+  /* tall scroll spacer so the page has a scrollbar; #app stays pinned to the
+     viewport the whole time, and scroll position scrubs the window-view clip */
+  #scrollStage{position:relative;height:500vh;}
+  #app{position:sticky;top:0;height:100vh;width:100%;display:flex;flex-direction:column;overflow:hidden;}
 
   header{
     height:58px;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;
@@ -47,15 +50,10 @@
   canvas{display:block;touch-action:none;}
 
   /* ============================================================
-     SCENE BACKDROP — 林间小屋窗景实拍照片
+     SCENE BACKDROP — 林间小屋窗景视频，逐帧跟随滚动条擦洗
      ============================================================ */
   #sceneBackdrop{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:#050505;}
-  .bgPhoto{
-    position:absolute;inset:0;
-    background-image:url('assets/window-view.webp');
-    background-size:cover;
-    background-position:52% 42%;
-  }
+  #scrubFrame{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:51% 50%;}
   .vignetteOverlay{position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 52% 55%, rgba(0,0,0,0) 45%, rgba(0,0,0,.5) 100%);}
   #hint{
     position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:5;
@@ -161,6 +159,7 @@
 
 <div id="loading"><div class="m">瓶　间</div><div class="bar"><i></i></div></div>
 
+<div id="scrollStage">
 <div id="app">
   <header>
     <div class="brand">
@@ -177,11 +176,11 @@
   <div id="main">
     <div id="viewport">
       <div id="sceneBackdrop">
-        <div class="bgPhoto"></div>
+        <img id="scrubFrame" src="assets/frames/f001.webp" alt="">
         <div class="vignetteOverlay"></div>
       </div>
       <div id="canvasWrap"></div>
-      <div id="hint">拖动旋转花瓶 · 滚轮缩放 · 点击花材卡片插入</div>
+      <div id="hint">上下滚动页面靠近窗台花瓶 · 点击花材卡片插入</div>
 
       <div id="selPanel">
         <h3>已插入的花材</h3>
@@ -224,6 +223,7 @@
       </div>
     </div>
   </div>
+</div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -479,9 +479,9 @@ const scene = new THREE.Scene();
 // shows through the transparent canvas instead of a rendered scene.background.
 
 const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
-let target = new THREE.Vector3(0,2.45,0);
-let theta = 0.08, phi = 1.42, radius = 9.0;
-let targetRadius = 9.0;
+let target = new THREE.Vector3(0,3.71,0);
+const theta = 0, phi = 1.42;
+let radius = 12.52;
 
 function updateCamera(){
   camera.position.set(
@@ -491,6 +491,62 @@ function updateCamera(){
   );
   camera.lookAt(target);
 }
+
+/* ============================================================
+   SCROLL-SCRUBBED WINDOW-VIEW FOOTAGE
+   The vase in assets/frames/*.webp holds still while the camera in the
+   footage dollies in on it over 121 frames. These control points were
+   measured directly off the footage (rim/base pixel position at 5 sample
+   frames) and solved for the (radius, target.y) this app's camera needs
+   so the flower anchor (RIM_Y) lines up with the real vase's opening at
+   every frame, not just the sampled ones — piecewise-linear between them.
+   ============================================================ */
+const TOTAL_FRAMES = 121;
+const SCRUB_CTRL = [
+  {t:0.00, radius:12.52, targetY:3.71},
+  {t:0.25, radius:11.02, targetY:3.378},
+  {t:0.50, radius:10.22, targetY:3.207},
+  {t:0.75, radius:8.815, targetY:2.792},
+  {t:1.00, radius:6.727, targetY:2.174},
+];
+function scrubInterp(t, key){
+  for(let i=0;i<SCRUB_CTRL.length-1;i++){
+    const a = SCRUB_CTRL[i], b = SCRUB_CTRL[i+1];
+    if(t>=a.t && t<=b.t){
+      const f = (t-a.t)/(b.t-a.t);
+      return a[key] + (b[key]-a[key])*f;
+    }
+  }
+  return SCRUB_CTRL[SCRUB_CTRL.length-1][key];
+}
+
+const scrubFrameEl = document.getElementById('scrubFrame');
+const scrollStageEl = document.getElementById('scrollStage');
+const frameCache = [];
+for(let i=1;i<=TOTAL_FRAMES;i++){
+  const im = new Image();
+  im.src = 'assets/frames/f'+String(i).padStart(3,'0')+'.webp';
+  frameCache.push(im);
+}
+let lastFrameIdx = -1;
+function updateScrub(){
+  const maxScroll = scrollStageEl.offsetHeight - window.innerHeight;
+  const t = maxScroll>0 ? Math.min(1,Math.max(0, window.scrollY/maxScroll)) : 0;
+  const frameIdx = Math.min(TOTAL_FRAMES, Math.max(1, Math.round(t*(TOTAL_FRAMES-1))+1));
+  if(frameIdx!==lastFrameIdx){
+    scrubFrameEl.src = frameCache[frameIdx-1].src;
+    lastFrameIdx = frameIdx;
+  }
+  radius = scrubInterp(t,'radius');
+  target.y = scrubInterp(t,'targetY');
+  updateCamera();
+}
+let scrubQueued = false;
+window.addEventListener('scroll', ()=>{
+  if(scrubQueued) return;
+  scrubQueued = true;
+  requestAnimationFrame(()=>{ scrubQueued=false; updateScrub(); });
+}, {passive:true});
 
 scene.add(new THREE.HemisphereLight(0x8895a0, 0x0e0d0c, 0.5));
 const key = new THREE.DirectionalLight(0xb9c4bd, 1.05);
@@ -540,41 +596,13 @@ floor.position.y = 0;
 floor.receiveShadow = true;
 scene.add(floor);
 
-/* ---- vase ---- */
+/* ---- vase ----
+   No 3D vase mesh here on purpose: the vase itself is the glass carafe
+   already sitting in the window-view footage (assets/frames). Flowers are
+   anchored at the same rim height/radius the old modeled vase used, so
+   they plant into the same spot the real vase's opening occupies. */
 const vaseGroup = new THREE.Group();
 scene.add(vaseGroup);
-const vasePts = [
-  new THREE.Vector2(0.01,0),
-  new THREE.Vector2(0.55,0),
-  new THREE.Vector2(0.64,0.10),
-  new THREE.Vector2(0.68,0.38),
-  new THREE.Vector2(0.70,0.87),
-  new THREE.Vector2(0.60,1.36),
-  new THREE.Vector2(0.36,1.78),
-  new THREE.Vector2(0.33,1.99),
-  new THREE.Vector2(0.39,2.11),
-  new THREE.Vector2(0.38,2.15),
-];
-const vaseGeo = new THREE.LatheGeometry(vasePts, 64);
-const vaseMat = new THREE.MeshPhysicalMaterial({
-  color:0xf3f8f4, transparent:true, opacity:1,
-  transmission:0.96, roughness:0.03,
-  ior:1.52, clearcoat:1.0, clearcoatRoughness:0.05,
-  side:THREE.DoubleSide, envMapIntensity:1.6
-});
-const vase = new THREE.Mesh(vaseGeo, vaseMat);
-vase.castShadow = false;
-vaseGroup.add(vase);
-
-const waterGeo = new THREE.CircleGeometry(0.32,32);
-const waterMat = new THREE.MeshPhysicalMaterial({
-  color:0xa9cfc6, transparent:true, opacity:0.5, transmission:0.7,
-  roughness:0.1, ior:1.33, side:THREE.DoubleSide
-});
-const water = new THREE.Mesh(waterGeo, waterMat);
-water.rotation.x=-Math.PI/2;
-water.position.y=1.50;
-vaseGroup.add(water);
 
 const RIM_Y = 2.15;
 const INSERT_R = 0.22;
@@ -604,16 +632,6 @@ function createInstance(speciesId, colorHex, opts){
   const anchor = new THREE.Group();
   anchor.position.set(px, RIM_Y, pz);
   vaseGroup.add(anchor);
-
-  // submerged lower stem (fixed, decorative)
-  const lowerLen = 1.3 + Math.random()*1.0;
-  const lowerStem = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.022,0.022,1,6),
-    new THREE.MeshStandardMaterial({color:0x6b7d5f, roughness:0.7})
-  );
-  lowerStem.scale.y = lowerLen;
-  lowerStem.position.y = -lowerLen/2;
-  anchor.add(lowerStem);
 
   const leanPivot = new THREE.Group();
   anchor.add(leanPivot);
@@ -939,30 +957,21 @@ function renderThumbnails(){
 }
 
 /* ============================================================
-   INTERACTION — orbit + click select
+   INTERACTION — click/tap to select a flower
+   (the camera itself is driven entirely by page-scroll scrubbing, see
+   updateScrub() above — no drag-orbit or wheel-zoom on the canvas)
    ============================================================ */
-let dragging=false, dragged=false, lastX=0, lastY=0;
+let dragged=false, downX=0, downY=0;
 const dom = renderer.domElement;
 dom.addEventListener('pointerdown', e=>{
-  dragging=true; dragged=false; lastX=e.clientX; lastY=e.clientY;
-  dom.setPointerCapture(e.pointerId);
+  dragged=false; downX=e.clientX; downY=e.clientY;
 });
 dom.addEventListener('pointermove', e=>{
-  if(!dragging) return;
-  const dx=e.clientX-lastX, dy=e.clientY-lastY;
-  if(Math.abs(dx)+Math.abs(dy)>3) dragged=true;
-  theta -= dx*0.0065;
-  phi = Math.min(1.5, Math.max(0.55, phi - dy*0.0055));
-  lastX=e.clientX; lastY=e.clientY;
+  if(Math.abs(e.clientX-downX)+Math.abs(e.clientY-downY)>3) dragged=true;
 });
 window.addEventListener('pointerup', e=>{
-  if(dragging && !dragged) handleTap(e.clientX,e.clientY);
-  dragging=false;
+  if(!dragged) handleTap(e.clientX,e.clientY);
 });
-dom.addEventListener('wheel', e=>{
-  e.preventDefault();
-  targetRadius = Math.min(13, Math.max(5, targetRadius + e.deltaY*0.005));
-},{passive:false});
 
 function handleTap(clientX,clientY){
   const rect = dom.getBoundingClientRect();
@@ -996,9 +1005,21 @@ document.getElementById('randomBtn').addEventListener('click', ()=>{
 });
 document.getElementById('exportBtn').addEventListener('click', ()=>{
   renderer.render(scene, camera);
+  // composite the current window-view frame (a plain <img>, not part of the
+  // WebGL canvas) behind the flower render so the export isn't just a
+  // transparent PNG of the flowers alone
+  const w = renderer.domElement.width, h = renderer.domElement.height;
+  const out = document.createElement('canvas');
+  out.width = w; out.height = h;
+  const ctx = out.getContext('2d');
+  const objPosX=0.51, objPosY=0.5;
+  const scale = Math.max(w/scrubFrameEl.naturalWidth, h/scrubFrameEl.naturalHeight);
+  const drawW = scrubFrameEl.naturalWidth*scale, drawH = scrubFrameEl.naturalHeight*scale;
+  ctx.drawImage(scrubFrameEl, (w-drawW)*objPosX, (h-drawH)*objPosY, drawW, drawH);
+  ctx.drawImage(renderer.domElement, 0, 0, w, h);
   const link = document.createElement('a');
   link.download = '我的插花作品.png';
-  link.href = renderer.domElement.toDataURL('image/png');
+  link.href = out.toDataURL('image/png');
   link.click();
 });
 
@@ -1010,13 +1031,12 @@ function onResize(){
   renderer.setSize(w,h);
   camera.aspect = w/h;
   camera.updateProjectionMatrix();
+  updateScrub();
 }
 window.addEventListener('resize', onResize);
 
 function animate(){
   requestAnimationFrame(animate);
-  radius += (targetRadius-radius)*0.1;
-  updateCamera();
   renderer.render(scene, camera);
 }
 
@@ -1027,7 +1047,7 @@ function init(){
   onResize();
   renderThumbnails();
   renderCards();
-  updateCamera();
+  updateScrub();
   animate();
   setTimeout(()=>{
     document.getElementById('loading').classList.add('hide');
