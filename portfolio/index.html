@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sydney Jiang · Business & Data Analytics</title>
+<meta name="description" content="Sydney (Xin Ni) Jiang — business & data analytics portfolio. Columbia MSBA, Boston University Economics. Machine learning, A/B testing, and credit risk modeling.">
+<style>
+  :root{
+    --bg:#faf7f1;
+    --bg-soft:#f3eee4;
+    --panel:#ffffff;
+    --ink:#2a2723;
+    --ink-soft:#6f6a61;
+    --ink-faint:#a09a8e;
+    --sage:#6f8264;
+    --sage-deep:#55654c;
+    --sage-tint:#eef1e9;
+    --rose:#b06a72;
+    --rose-tint:#f7ecec;
+    --line:#e6dfd2;
+    --shadow:0 1px 2px rgba(42,39,35,.04), 0 12px 32px -16px rgba(42,39,35,.14);
+    --serif:"Palatino Linotype","Book Antiqua",Palatino,"Songti SC",Georgia,serif;
+    --sans:"Avenir Next","Segoe UI","Helvetica Neue",Arial,"PingFang SC",sans-serif;
+  }
+  html[data-theme="dark"]{
+    --bg:#17171a;
+    --bg-soft:#1e1e22;
+    --panel:#212126;
+    --ink:#e8e4dd;
+    --ink-soft:#a29d94;
+    --ink-faint:#726d64;
+    --sage:#8a9a7e;
+    --sage-deep:#a5b699;
+    --sage-tint:#252a22;
+    --rose:#c9838a;
+    --rose-tint:#2b2225;
+    --line:#323238;
+    --shadow:0 1px 2px rgba(0,0,0,.25), 0 12px 32px -16px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--sans);font-size:16px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    transition:background .3s,color .3s;
+  }
+  ::selection{background:var(--sage);color:#fff;}
+  a{color:var(--sage-deep);text-decoration:none;}
+  a:hover{text-decoration:underline;text-underline-offset:3px;}
+
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px;}
+
+  /* ---------- nav ---------- */
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .navRow{display:flex;align-items:center;justify-content:space-between;height:60px;}
+  .monogram{
+    font-family:var(--serif);font-size:20px;font-weight:700;letter-spacing:2px;
+    color:var(--ink);display:flex;align-items:center;gap:10px;
+  }
+  .monogram .dot{width:8px;height:8px;border-radius:50%;background:var(--sage);display:inline-block;}
+  .navLinks{display:flex;gap:22px;font-size:13.5px;letter-spacing:.4px;}
+  .navLinks a{color:var(--ink-soft);}
+  .navLinks a:hover{color:var(--ink);text-decoration:none;}
+  .navLinks a.active{color:var(--sage-deep);font-weight:600;}
+  #themeBtn{
+    border:1px solid var(--line);background:transparent;color:var(--ink-soft);
+    width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;line-height:1;
+    transition:all .2s;
+  }
+  #themeBtn:hover{border-color:var(--sage);color:var(--sage-deep);}
+  @media(max-width:720px){ .navLinks{display:none;} }
+
+  /* ---------- hero ---------- */
+  header.hero{padding:88px 0 64px;position:relative;overflow:hidden;}
+  .eyebrow{
+    font-size:12.5px;letter-spacing:3px;text-transform:uppercase;color:var(--sage-deep);
+    display:flex;align-items:center;gap:12px;margin-bottom:20px;
+  }
+  .eyebrow::before{content:"";width:36px;height:1px;background:var(--sage);}
+  h1{
+    font-family:var(--serif);font-size:clamp(38px,6.5vw,60px);line-height:1.12;
+    font-weight:700;margin:0 0 8px;letter-spacing:-.5px;
+  }
+  h1 .zh{font-size:.42em;font-weight:400;color:var(--ink-faint);letter-spacing:6px;vertical-align:middle;margin-left:14px;}
+  .heroTag{
+    font-size:clamp(17px,2.4vw,20px);color:var(--ink-soft);max-width:620px;margin:14px 0 26px;
+  }
+  .heroTag em{font-style:normal;color:var(--sage-deep);border-bottom:2px solid var(--sage-tint);}
+  .heroMeta{display:flex;flex-wrap:wrap;gap:10px 22px;font-size:14px;color:var(--ink-soft);align-items:center;}
+  .heroMeta a{display:inline-flex;align-items:center;gap:7px;color:var(--ink-soft);}
+  .heroMeta a:hover{color:var(--sage-deep);text-decoration:none;}
+  .heroMeta svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;flex:0 0 auto;}
+  .heroBtns{margin-top:30px;display:flex;gap:12px;flex-wrap:wrap;}
+  .btn{
+    display:inline-block;padding:11px 24px;border-radius:26px;font-size:14px;letter-spacing:.4px;
+    border:1px solid var(--sage-deep);transition:all .2s;
+  }
+  .btn.primary{background:var(--sage-deep);color:#fff;}
+  .btn.primary:hover{background:var(--sage);border-color:var(--sage);text-decoration:none;}
+  .btn.ghost{color:var(--sage-deep);}
+  .btn.ghost:hover{background:var(--sage-tint);text-decoration:none;}
+
+  /* botanical accent */
+  .heroArt{
+    position:absolute;right:-40px;top:30px;width:300px;opacity:.5;pointer-events:none;
+  }
+  .heroArt svg{width:100%;height:auto;}
+  .heroArt path,.heroArt circle{stroke:var(--sage);fill:none;stroke-width:1.1;}
+  .heroArt circle.bud{fill:var(--rose);stroke:none;opacity:.55;}
+  @media(max-width:860px){ .heroArt{display:none;} }
+
+  /* stat strip */
+  .stats{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:52px;
+  }
+  .stat{background:var(--panel);padding:20px 18px;}
+  .stat b{
+    display:block;font-family:var(--serif);font-size:28px;font-weight:700;color:var(--sage-deep);
+    line-height:1.1;margin-bottom:4px;
+  }
+  .stat span{font-size:12.5px;color:var(--ink-soft);letter-spacing:.3px;}
+  @media(max-width:720px){ .stats{grid-template-columns:repeat(2,1fr);} }
+
+  /* ---------- sections ---------- */
+  section{padding:64px 0;}
+  section + section{border-top:1px solid var(--line);}
+  h2{
+    font-family:var(--serif);font-size:clamp(26px,3.6vw,32px);font-weight:700;margin:0 0 6px;
+    display:flex;align-items:baseline;gap:14px;
+  }
+  h2 .num{font-size:14px;color:var(--ink-faint);font-family:var(--sans);letter-spacing:2px;font-weight:400;}
+  .sectionLede{color:var(--ink-soft);margin:0 0 36px;max-width:640px;}
+
+  /* about */
+  .aboutGrid{display:grid;grid-template-columns:1.6fr 1fr;gap:36px;align-items:start;}
+  .aboutGrid p{margin:0 0 16px;color:var(--ink);}
+  .factCard{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;box-shadow:var(--shadow);
+  }
+  .factCard h3{margin:0 0 14px;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--sage-deep);}
+  .factCard ul{margin:0;padding:0;list-style:none;font-size:14.5px;}
+  .factCard li{padding:7px 0;border-bottom:1px dashed var(--line);display:flex;justify-content:space-between;gap:12px;}
+  .factCard li:last-child{border-bottom:none;}
+  .factCard li span:first-child{color:var(--ink-soft);}
+  .factCard li span:last-child{text-align:right;font-weight:600;}
+  @media(max-width:720px){ .aboutGrid{grid-template-columns:1fr;} }
+
+  /* experience timeline */
+  .timeline{position:relative;padding-left:28px;}
+  .timeline::before{
+    content:"";position:absolute;left:5px;top:6px;bottom:6px;width:1px;
+    background:linear-gradient(var(--sage) 0%, var(--line) 100%);
+  }
+  .job{position:relative;padding-bottom:44px;}
+  .job:last-child{padding-bottom:0;}
+  .job::before{
+    content:"";position:absolute;left:-28px;top:7px;width:11px;height:11px;border-radius:50%;
+    background:var(--bg);border:2px solid var(--sage);
+  }
+  .jobHead{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-bottom:2px;}
+  .jobHead h3{font-family:var(--serif);font-size:21px;margin:0;font-weight:700;}
+  .jobRole{color:var(--rose);font-size:14.5px;font-weight:600;letter-spacing:.3px;}
+  .jobMeta{font-size:13px;color:var(--ink-faint);margin-bottom:14px;letter-spacing:.3px;}
+  .job ul{margin:0 0 14px;padding-left:18px;color:var(--ink-soft);font-size:15px;}
+  .job li{margin-bottom:8px;}
+  .job li b{color:var(--ink);font-weight:600;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
+  .chip{
+    font-size:12px;letter-spacing:.4px;padding:5px 12px;border-radius:14px;
+    background:var(--sage-tint);color:var(--sage-deep);border:1px solid transparent;
+  }
+  .chip.metric{background:var(--rose-tint);color:var(--rose);}
+
+  /* research */
+  .researchCard{
+    background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--sage);
+    border-radius:12px;padding:26px 28px;box-shadow:var(--shadow);
+  }
+  .researchCard h3{font-family:var(--serif);font-size:20px;margin:0 0 4px;font-style:italic;font-weight:600;}
+  .researchCard .jobMeta{margin-bottom:12px;}
+  .researchCard p{margin:0 0 12px;color:var(--ink-soft);font-size:15px;}
+
+  /* education */
+  .eduGrid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .eduCard{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:26px 28px;box-shadow:var(--shadow);position:relative;overflow:hidden;
+  }
+  .eduCard::after{
+    content:"";position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;
+    background:radial-gradient(circle, var(--sage-tint) 0%, transparent 70%);
+  }
+  .eduCard .school{font-family:var(--serif);font-size:20px;font-weight:700;margin:0 0 2px;}
+  .eduCard .degree{color:var(--rose);font-size:14.5px;font-weight:600;margin-bottom:6px;}
+  .eduCard .jobMeta{margin-bottom:12px;}
+  .eduCard p{margin:0;font-size:14px;color:var(--ink-soft);}
+  @media(max-width:720px){ .eduGrid{grid-template-columns:1fr;} }
+
+  /* skills */
+  .skillGroup{margin-bottom:26px;}
+  .skillGroup:last-child{margin-bottom:0;}
+  .skillGroup h3{
+    font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--sage-deep);
+    margin:0 0 12px;display:flex;align-items:center;gap:10px;
+  }
+  .skillGroup h3::after{content:"";flex:1;height:1px;background:var(--line);}
+  .skillGroup .chips .chip{font-size:13px;padding:7px 15px;}
+
+  /* contact */
+  .contact{text-align:center;padding:80px 0 70px;}
+  .contact h2{justify-content:center;}
+  .contact p{color:var(--ink-soft);max-width:520px;margin:12px auto 30px;}
+  footer{
+    border-top:1px solid var(--line);padding:26px 0 34px;text-align:center;
+    font-size:12.5px;color:var(--ink-faint);letter-spacing:.4px;
+  }
+
+  /* reveal animation */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease;}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none;}
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap navRow">
+    <div class="monogram"><span class="dot"></span>Sydney Jiang</div>
+    <div class="navLinks">
+      <a href="#about">About</a>
+      <a href="#experience">Experience</a>
+      <a href="#research">Research</a>
+      <a href="#education">Education</a>
+      <a href="#skills">Skills</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <button id="themeBtn" title="Toggle theme" aria-label="Toggle color theme">◐</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="heroArt" aria-hidden="true">
+    <svg viewBox="0 0 300 320">
+      <path d="M150 310 C150 240 150 180 150 120"/>
+      <path d="M150 200 C120 180 95 175 70 180 C95 155 125 160 150 185"/>
+      <path d="M150 160 C180 140 205 135 232 142 C208 115 176 122 150 148"/>
+      <path d="M150 120 C140 90 142 62 158 40"/>
+      <circle class="bud" cx="160" cy="36" r="9"/>
+      <circle class="bud" cx="70" cy="178" r="5"/>
+      <circle class="bud" cx="233" cy="141" r="5"/>
+      <path d="M150 250 C128 238 108 238 90 246"/>
+    </svg>
+  </div>
+  <div class="wrap">
+    <div class="eyebrow">Business &amp; Data Analytics</div>
+    <h1>Xin&nbsp;Ni (Sydney) Jiang</h1>
+    <p class="heroTag">I turn messy data into decisions — <em>segmentation, churn and credit-risk models</em> that moved real business metrics across marketing, securities, and banking.</p>
+    <div class="heroMeta">
+      <a href="#contact"><svg viewBox="0 0 24 24"><path d="M12 21c-4-4.5-7-8-7-11.5A7 7 0 0 1 19 9.5C19 13 16 16.5 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>New York, NY</a>
+      <a href="mailto:sydneyjiang00@gmail.com"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>sydneyjiang00@gmail.com</a>
+      <a href="https://www.linkedin.com/in/xin-ni-jiang-4a4721296/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2.5 2.5 0 0 1 5 0v4"/></svg>LinkedIn</a>
+      <a href="https://github.com/sydneyjiang000" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-2.85 17.54c.45.08.62-.2.62-.44v-1.54c-2.5.54-3.03-1.2-3.03-1.2-.41-1.04-1-1.32-1-1.32-.82-.56.06-.55.06-.55.9.06 1.38.93 1.38.93.8 1.38 2.11.98 2.63.75.08-.58.31-.98.57-1.2-2-.23-4.1-1-4.1-4.45 0-.98.35-1.78.93-2.41-.1-.23-.4-1.15.08-2.4 0 0 .76-.24 2.48.92a8.6 8.6 0 0 1 4.5 0c1.72-1.16 2.47-.92 2.47-.92.5 1.25.19 2.17.1 2.4.58.63.92 1.43.92 2.41 0 3.47-2.1 4.22-4.11 4.44.32.28.61.83.61 1.67v2.47c0 .24.16.53.63.44A9 9 0 0 0 12 3z"/></svg>GitHub</a>
+    </div>
+    <div class="heroBtns">
+      <a class="btn primary" href="mailto:sydneyjiang00@gmail.com">Get in touch</a>
+      <a class="btn ghost" href="#experience">See my work ↓</a>
+    </div>
+
+    <div class="stats reveal">
+      <div class="stat"><b>0.82</b><span>AUC — churn prediction model in production use</span></div>
+      <div class="stat"><b>+22%</b><span>campaign CTR from segmentation-driven ad strategy</span></div>
+      <div class="stat"><b>30M+</b><span>customer records modeled for credit default risk</span></div>
+      <div class="stat"><b>3.91</b><span>GPA — BA Economics, Boston University</span></div>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section id="about">
+    <div class="wrap">
+      <h2><span class="num">01</span>About</h2>
+      <div class="aboutGrid reveal">
+        <div>
+          <p>I'm an analyst who likes the whole journey of a question — from a vague "why is retention slipping?" to a model, an experiment, and a recommendation someone actually acts on.</p>
+          <p>Across internships at <b>ARISO</b>, <b>CITIC Securities</b>, and <b>China Construction Bank</b>, I've built customer segmentation and churn models, designed A/B tests, ranked bond issuers by credit quality, and predicted loan defaults at 30-million-record scale. Alongside industry work, I've done empirical economics research on tacit collusion with Prof. Juan Ortner at Boston University.</p>
+          <p>I'm currently finishing my BA in Economics (Statistics minor) at Boston University, and will begin the <b>MS in Business Analytics at Columbia University</b> in Fall 2026.</p>
+        </div>
+        <div class="factCard">
+          <h3>Quick facts</h3>
+          <ul>
+            <li><span>Based in</span><span>New York, NY</span></li>
+            <li><span>Next up</span><span>Columbia MSBA '28</span></li>
+            <li><span>Focus</span><span>ML · A/B testing · Risk</span></li>
+            <li><span>Languages</span><span>English · Mandarin</span></li>
+            <li><span>Work auth</span><span>No H-1B sponsorship needed<br>(STEM OPT through 2031)</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="experience">
+    <div class="wrap">
+      <h2><span class="num">02</span>Experience</h2>
+      <p class="sectionLede">Three industries, one thread: quantitative models that changed how a team made decisions.</p>
+      <div class="timeline">
+
+        <article class="job reveal">
+          <div class="jobHead"><h3>ARISO</h3><span class="jobRole">Analyst Intern</span></div>
+          <div class="jobMeta">Remote / Santa Clara, CA · Sep 2025 – Present</div>
+          <ul>
+            <li>Engineered a customer segmentation model in Python (pandas, scikit-learn) on <b>50K+ user interactions</b>, surfacing 4 key personas that shaped targeted ad strategy and lifted campaign CTR by <b>22%+</b>.</li>
+            <li>Built a churn prediction model (logistic regression + random forest) reaching <b>AUC 0.82</b>; the marketing team adopted its retention recommendations to prioritize high-risk segments.</li>
+            <li>Designed A/B tests across 3 landing-page variants, identifying the highest-converting registration funnel and driving an <b>18% lift in conversion rate</b>.</li>
+            <li>Automated data pipelines connecting Google Ads and Search Console APIs to live Tableau dashboards — replacing <b>15 hours/week</b> of manual reporting.</li>
+          </ul>
+          <div class="chips">
+            <span class="chip">Python</span><span class="chip">scikit-learn</span><span class="chip">A/B Testing</span><span class="chip">Tableau</span>
+            <span class="chip metric">+22% CTR</span><span class="chip metric">AUC 0.82</span><span class="chip metric">+18% conversion</span>
+          </div>
+        </article>
+
+        <article class="job reveal">
+          <div class="jobHead"><h3>CITIC Securities</h3><span class="jobRole">Summer Intern</span></div>
+          <div class="jobMeta">Dalian, China · Jul 2025 – Sep 2025</div>
+          <ul>
+            <li>Conducted credit analysis on <b>10+ real-estate bond issuers</b> using Bloomberg and Wind data, synthesizing macro and sector findings into reports that supported portfolio positioning under volatile policy conditions.</li>
+            <li>Built a multi-factor credit ranking model (DSCR, interest coverage, land-bank valuation), cutting per-issuer scoring time from 2–3 hours to <b>under 1 hour</b>.</li>
+            <li>Applied NLP sentiment analysis (LDA &amp; BERT) to <b>500+ regulatory documents</b> to quantify policy-risk exposure; findings entered senior PMs' bond-allocation framework.</li>
+          </ul>
+          <div class="chips">
+            <span class="chip">Credit Analysis</span><span class="chip">NLP · LDA · BERT</span><span class="chip">Bloomberg / Wind</span>
+            <span class="chip metric">3× faster scoring</span>
+          </div>
+        </article>
+
+        <article class="job reveal">
+          <div class="jobHead"><h3>China Construction Bank</h3><span class="jobRole">Credit Risk Analyst Intern</span></div>
+          <div class="jobMeta">Dalian, China · Jun 2024 – Aug 2024</div>
+          <ul>
+            <li>Built a credit default prediction model on <b>30M+ customer records</b>, using stepwise feature selection to distill 1,104 variables down to the <b>105 most predictive</b> attributes.</li>
+            <li>Tuned logistic regression hyperparameters to raise model AUC from <b>68% to 75%</b>, enabling more reliable identification of high-risk borrowers before credit-line decisions.</li>
+            <li>Presented high-risk defaulter personas to the credit risk committee, directly informing credit-line adjustments across <b>50,000+ accounts</b>.</li>
+          </ul>
+          <div class="chips">
+            <span class="chip">Risk Modeling</span><span class="chip">Feature Selection</span><span class="chip">Logistic Regression</span>
+            <span class="chip metric">AUC 68→75%</span><span class="chip metric">30M+ records</span>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section id="research">
+    <div class="wrap">
+      <h2><span class="num">03</span>Research</h2>
+      <p class="sectionLede">Empirical industrial organization — where economics meets text data.</p>
+      <div class="researchCard reveal">
+        <h3>Collusion in Plain Sight: Firms' Use of Public Announcements to Restrain Competition</h3>
+        <div class="jobMeta">Research Assistant · Supervisor: Prof. Juan Ortner, Boston University · Mar 2025 – Jul 2025</div>
+        <p>Analyzed earnings-call transcripts from major publicly traded firms to detect communication patterns indicative of tacit collusion in oligopolistic markets, contributing to an ongoing empirical study.</p>
+        <p>Designed an IO-theory-based classification framework and hand-labeled <b>1,000+ transcript excerpts</b>, building a structured dataset that supports NLP and econometric analysis of firm behavior in concentrated industries.</p>
+        <div class="chips">
+          <span class="chip">Industrial Organization</span><span class="chip">Text Classification</span><span class="chip">Econometrics</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="education">
+    <div class="wrap">
+      <h2><span class="num">04</span>Education</h2>
+      <div class="eduGrid">
+        <div class="eduCard reveal">
+          <p class="school">Columbia University</p>
+          <p class="degree">MS in Industrial Engineering — Business Analytics (MSBA)</p>
+          <div class="jobMeta">New York, NY · Sep 2026 – Jan 2028 (expected)</div>
+          <p>Coursework: Optimization Analytics, Machine Learning, Advanced Visualizations, Gen AI &amp; AI Strategies, Corporate Finance, Statistical Modeling, Data Science.</p>
+        </div>
+        <div class="eduCard reveal">
+          <p class="school">Boston University</p>
+          <p class="degree">BA in Economics · Minor in Statistics</p>
+          <div class="jobMeta">Boston, MA · Sep 2023 – May 2026 · GPA 3.91/4.0</div>
+          <p>Foundation in econometrics, statistical inference, and economic theory — plus research assistantship in empirical industrial organization.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="wrap">
+      <h2><span class="num">05</span>Skills</h2>
+      <p class="sectionLede">The toolkit behind the work.</p>
+      <div class="reveal">
+        <div class="skillGroup">
+          <h3>Programming</h3>
+          <div class="chips">
+            <span class="chip">Python (pandas · scikit-learn · NumPy)</span><span class="chip">SQL</span><span class="chip">R</span><span class="chip">Stata</span>
+          </div>
+        </div>
+        <div class="skillGroup">
+          <h3>Tools &amp; Visualization</h3>
+          <div class="chips">
+            <span class="chip">Tableau</span><span class="chip">Power BI</span><span class="chip">Advanced Excel (VBA · Pivot Tables)</span>
+          </div>
+        </div>
+        <div class="skillGroup">
+          <h3>Analytics &amp; Modeling</h3>
+          <div class="chips">
+            <span class="chip">Statistical Modeling</span><span class="chip">Machine Learning</span><span class="chip">A/B Testing</span>
+            <span class="chip">NLP / Text Analysis</span><span class="chip">Causal Inference</span><span class="chip">Cohort &amp; Funnel Analysis</span>
+            <span class="chip">Time-Series Analysis</span><span class="chip">Business Intelligence</span>
+          </div>
+        </div>
+        <div class="skillGroup">
+          <h3>Languages</h3>
+          <div class="chips">
+            <span class="chip">Mandarin (native)</span><span class="chip">English (fluent)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact">
+    <div class="wrap reveal">
+      <h2>Let's talk data.</h2>
+      <p>I'm open to analyst and data-science opportunities in New York and beyond. No H-1B sponsorship required — STEM OPT through 2031, with E-3 visa eligibility thereafter.</p>
+      <div class="heroBtns" style="justify-content:center;">
+        <a class="btn primary" href="mailto:sydneyjiang00@gmail.com">sydneyjiang00@gmail.com</a>
+        <a class="btn ghost" href="https://www.linkedin.com/in/xin-ni-jiang-4a4721296/" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn ghost" href="https://github.com/sydneyjiang000" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">Sydney Jiang · New York, NY · Built with care (and a little data)</div>
+</footer>
+
+<script>
+  // theme toggle — follows system preference, remembers manual choice
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.dataset.theme = saved;
+  else if (matchMedia('(prefers-color-scheme: dark)').matches) root.dataset.theme = 'dark';
+  document.getElementById('themeBtn').addEventListener('click', () => {
+    const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    localStorage.setItem('theme', next);
+  });
+
+  // scroll-reveal
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // nav active state
+  const links = [...document.querySelectorAll('.navLinks a')];
+  const secObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.toggle('active', l.hash === '#' + e.target.id));
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  document.querySelectorAll('main section, header.hero').forEach(s => { if (s.id) secObserver.observe(s); });
+</script>
+</body>
+</html>
