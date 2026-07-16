@@ -1,1061 +1,485 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-<title>瓶间 · 立体插花工坊</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sydney Jiang · Business & Data Analytics</title>
+<meta name="description" content="Sydney (Xin Ni) Jiang — business & data analytics portfolio. Columbia MSBA, Boston University Economics. Machine learning, A/B testing, and credit risk modeling.">
 <style>
   :root{
-    --cream:#1a1a1e;
-    --cream-deep:#252528;
+    --bg:#faf7f1;
+    --bg-soft:#f3eee4;
+    --panel:#ffffff;
+    --ink:#2a2723;
+    --ink-soft:#6f6a61;
+    --ink-faint:#a09a8e;
+    --sage:#6f8264;
+    --sage-deep:#55654c;
+    --sage-tint:#eef1e9;
+    --rose:#b06a72;
+    --rose-tint:#f7ecec;
+    --line:#e6dfd2;
+    --shadow:0 1px 2px rgba(42,39,35,.04), 0 12px 32px -16px rgba(42,39,35,.14);
+    --serif:"Palatino Linotype","Book Antiqua",Palatino,"Songti SC",Georgia,serif;
+    --sans:"Avenir Next","Segoe UI","Helvetica Neue",Arial,"PingFang SC",sans-serif;
+  }
+  html[data-theme="dark"]{
+    --bg:#17171a;
+    --bg-soft:#1e1e22;
+    --panel:#212126;
     --ink:#e8e4dd;
-    --ink-soft:#999590;
+    --ink-soft:#a29d94;
+    --ink-faint:#726d64;
     --sage:#8a9a7e;
-    --sage-deep:#8aaa7e;
+    --sage-deep:#a5b699;
+    --sage-tint:#252a22;
     --rose:#c9838a;
-    --rose-deep:#c9838a;
-    --line:#333338;
-    --panel:#1e1e22;
+    --rose-tint:#2b2225;
+    --line:#323238;
+    --shadow:0 1px 2px rgba(0,0,0,.25), 0 12px 32px -16px rgba(0,0,0,.5);
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;width:100%;
-    font-family:"Palatino Linotype","Book Antiqua",Palatino,Georgia,serif;
-    background:#121215; color:var(--ink);}
-  button{font-family:inherit;}
-
-  /* tall scroll spacer so the page has a scrollbar; #app stays pinned to the
-     viewport the whole time, and scroll position scrubs the window-view clip */
-  #scrollStage{position:relative;height:500vh;}
-  #app{position:sticky;top:0;height:100vh;width:100%;display:flex;flex-direction:column;overflow:hidden;}
-
-  header{
-    height:58px;flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;
-    padding:0 22px;border-bottom:1px solid var(--line);background:var(--panel);z-index:20;
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:var(--sans);font-size:16px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    transition:background .3s,color .3s;
   }
-  header .brand{display:flex;align-items:baseline;gap:10px;}
-  header h1{margin:0;font-size:21px;letter-spacing:3px;font-weight:600;color:var(--ink);}
-  header .tag{font-size:11px;color:var(--ink-soft);letter-spacing:1px;font-style:italic;}
-  header .tools{display:flex;gap:8px;}
-  .toolBtn{
-    border:1px solid var(--line);background:var(--panel);color:var(--ink);
-    padding:7px 14px;border-radius:20px;font-size:12.5px;cursor:pointer;letter-spacing:.5px;
-    transition:all .15s;
+  ::selection{background:var(--sage);color:#fff;}
+  a{color:var(--sage-deep);text-decoration:none;}
+  a:hover{text-decoration:underline;text-underline-offset:3px;}
+
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px;}
+
+  /* ---------- nav ---------- */
+  nav{
+    position:sticky;top:0;z-index:50;
+    background:color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
   }
-  .toolBtn:hover{background:var(--sage);border-color:var(--sage);color:#fff;}
-
-  #main{flex:1;display:flex;min-height:0;position:relative;}
-
-  #viewport{flex:1;position:relative;min-width:0;background:#050505;overflow:hidden;}
-  #canvasWrap{position:absolute;inset:0;z-index:1;}
-  canvas{display:block;touch-action:none;}
-
-  /* ============================================================
-     SCENE BACKDROP — 林间小屋窗景视频，逐帧跟随滚动条擦洗
-     ============================================================ */
-  #sceneBackdrop{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:#050505;}
-  #scrubFrame{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:51% 50%;}
-  .vignetteOverlay{position:absolute;inset:0;background:radial-gradient(ellipse 80% 70% at 52% 55%, rgba(0,0,0,0) 45%, rgba(0,0,0,.5) 100%);}
-  #hint{
-    position:absolute;left:50%;bottom:16px;transform:translateX(-50%);z-index:5;
-    font-size:12px;color:var(--ink-soft);background:rgba(30,30,34,.88);
-    padding:6px 14px;border-radius:20px;border:1px solid var(--line);letter-spacing:.5px;
-    pointer-events:none;
+  .navRow{display:flex;align-items:center;justify-content:space-between;height:60px;}
+  .monogram{
+    font-family:var(--serif);font-size:20px;font-weight:700;letter-spacing:2px;
+    color:var(--ink);display:flex;align-items:center;gap:10px;
   }
-
-  /* floating selection panel */
-  #selPanel{
-    position:absolute;left:18px;top:18px;width:250px;background:var(--panel);z-index:5;
-    border:1px solid var(--line);border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.5);
-    padding:16px 16px 14px;max-height:calc(100% - 36px);overflow-y:auto;
+  .monogram .dot{width:8px;height:8px;border-radius:50%;background:var(--sage);display:inline-block;}
+  .navLinks{display:flex;gap:22px;font-size:13.5px;letter-spacing:.4px;}
+  .navLinks a{color:var(--ink-soft);}
+  .navLinks a:hover{color:var(--ink);text-decoration:none;}
+  .navLinks a.active{color:var(--sage-deep);font-weight:600;}
+  #themeBtn{
+    border:1px solid var(--line);background:transparent;color:var(--ink-soft);
+    width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;line-height:1;
+    transition:all .2s;
   }
-  #selPanel h3{margin:0 0 4px;font-size:13px;letter-spacing:1px;color:var(--ink-soft);font-weight:600;}
-  #bouquetList{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+  #themeBtn:hover{border-color:var(--sage);color:var(--sage-deep);}
+  @media(max-width:720px){ .navLinks{display:none;} }
+
+  /* ---------- hero ---------- */
+  header.hero{padding:88px 0 64px;position:relative;overflow:hidden;}
+  .eyebrow{
+    font-size:12.5px;letter-spacing:3px;text-transform:uppercase;color:var(--sage-deep);
+    display:flex;align-items:center;gap:12px;margin-bottom:20px;
+  }
+  .eyebrow::before{content:"";width:36px;height:1px;background:var(--sage);}
+  h1{
+    font-family:var(--serif);font-size:clamp(38px,6.5vw,60px);line-height:1.12;
+    font-weight:700;margin:0 0 8px;letter-spacing:-.5px;
+  }
+  h1 .zh{font-size:.42em;font-weight:400;color:var(--ink-faint);letter-spacing:6px;vertical-align:middle;margin-left:14px;}
+  .heroTag{
+    font-size:clamp(17px,2.4vw,20px);color:var(--ink-soft);max-width:620px;margin:14px 0 26px;
+  }
+  .heroTag em{font-style:normal;color:var(--sage-deep);border-bottom:2px solid var(--sage-tint);}
+  .heroMeta{display:flex;flex-wrap:wrap;gap:10px 22px;font-size:14px;color:var(--ink-soft);align-items:center;}
+  .heroMeta a{display:inline-flex;align-items:center;gap:7px;color:var(--ink-soft);}
+  .heroMeta a:hover{color:var(--sage-deep);text-decoration:none;}
+  .heroMeta svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;flex:0 0 auto;}
+  .heroBtns{margin-top:30px;display:flex;gap:12px;flex-wrap:wrap;}
+  .btn{
+    display:inline-block;padding:11px 24px;border-radius:26px;font-size:14px;letter-spacing:.4px;
+    border:1px solid var(--sage-deep);transition:all .2s;
+  }
+  .btn.primary{background:var(--sage-deep);color:#fff;}
+  .btn.primary:hover{background:var(--sage);border-color:var(--sage);text-decoration:none;}
+  .btn.ghost{color:var(--sage-deep);}
+  .btn.ghost:hover{background:var(--sage-tint);text-decoration:none;}
+
+  /* botanical accent */
+  .heroArt{
+    position:absolute;right:-40px;top:30px;width:300px;opacity:.5;pointer-events:none;
+  }
+  .heroArt svg{width:100%;height:auto;}
+  .heroArt path,.heroArt circle{stroke:var(--sage);fill:none;stroke-width:1.1;}
+  .heroArt circle.bud{fill:var(--rose);stroke:none;opacity:.55;}
+  @media(max-width:860px){ .heroArt{display:none;} }
+
+  /* stat strip */
+  .stats{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+    border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:52px;
+  }
+  .stat{background:var(--panel);padding:20px 18px;}
+  .stat b{
+    display:block;font-family:var(--serif);font-size:28px;font-weight:700;color:var(--sage-deep);
+    line-height:1.1;margin-bottom:4px;
+  }
+  .stat span{font-size:12.5px;color:var(--ink-soft);letter-spacing:.3px;}
+  @media(max-width:720px){ .stats{grid-template-columns:repeat(2,1fr);} }
+
+  /* ---------- sections ---------- */
+  section{padding:64px 0;}
+  section + section{border-top:1px solid var(--line);}
+  h2{
+    font-family:var(--serif);font-size:clamp(26px,3.6vw,32px);font-weight:700;margin:0 0 6px;
+    display:flex;align-items:baseline;gap:14px;
+  }
+  h2 .num{font-size:14px;color:var(--ink-faint);font-family:var(--sans);letter-spacing:2px;font-weight:400;}
+  .sectionLede{color:var(--ink-soft);margin:0 0 36px;max-width:640px;}
+
+  /* about */
+  .aboutGrid{display:grid;grid-template-columns:1.6fr 1fr;gap:36px;align-items:start;}
+  .aboutGrid p{margin:0 0 16px;color:var(--ink);}
+  .factCard{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;box-shadow:var(--shadow);
+  }
+  .factCard h3{margin:0 0 14px;font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--sage-deep);}
+  .factCard ul{margin:0;padding:0;list-style:none;font-size:14.5px;}
+  .factCard li{padding:7px 0;border-bottom:1px dashed var(--line);display:flex;justify-content:space-between;gap:12px;}
+  .factCard li:last-child{border-bottom:none;}
+  .factCard li span:first-child{color:var(--ink-soft);}
+  .factCard li span:last-child{text-align:right;font-weight:600;}
+  @media(max-width:720px){ .aboutGrid{grid-template-columns:1fr;} }
+
+  /* experience timeline */
+  .timeline{position:relative;padding-left:28px;}
+  .timeline::before{
+    content:"";position:absolute;left:5px;top:6px;bottom:6px;width:1px;
+    background:linear-gradient(var(--sage) 0%, var(--line) 100%);
+  }
+  .job{position:relative;padding-bottom:44px;}
+  .job:last-child{padding-bottom:0;}
+  .job::before{
+    content:"";position:absolute;left:-28px;top:7px;width:11px;height:11px;border-radius:50%;
+    background:var(--bg);border:2px solid var(--sage);
+  }
+  .jobHead{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-bottom:2px;}
+  .jobHead h3{font-family:var(--serif);font-size:21px;margin:0;font-weight:700;}
+  .jobRole{color:var(--rose);font-size:14.5px;font-weight:600;letter-spacing:.3px;}
+  .jobMeta{font-size:13px;color:var(--ink-faint);margin-bottom:14px;letter-spacing:.3px;}
+  .job ul{margin:0 0 14px;padding-left:18px;color:var(--ink-soft);font-size:15px;}
+  .job li{margin-bottom:8px;}
+  .job li b{color:var(--ink);font-weight:600;}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;}
   .chip{
-    display:flex;align-items:center;gap:5px;background:var(--cream-deep);border-radius:14px;
-    padding:4px 8px 4px 4px;font-size:11.5px;cursor:pointer;border:1.5px solid transparent;
+    font-size:12px;letter-spacing:.4px;padding:5px 12px;border-radius:14px;
+    background:var(--sage-tint);color:var(--sage-deep);border:1px solid transparent;
   }
-  .chip.active{border-color:var(--sage-deep);background:var(--cream-deep);}
-  .chip .dot{width:11px;height:11px;border-radius:50%;border:1px solid rgba(0,0,0,.15);}
-  .chip .x{color:var(--ink-soft);font-size:12px;padding:0 2px;}
-  .chip .x:hover{color:var(--rose-deep);}
-  #emptyMsg{font-size:12px;color:var(--ink-soft);line-height:1.6;padding:6px 0 2px;}
+  .chip.metric{background:var(--rose-tint);color:var(--rose);}
 
-  .ctrlBlock{border-top:1px solid var(--line);margin-top:10px;padding-top:12px;}
-  .ctrlBlock .title{font-size:15px;font-weight:600;margin-bottom:2px;}
-  .ctrlBlock .cat{font-size:11px;color:var(--sage-deep);letter-spacing:1px;margin-bottom:10px;}
-  .ctrlRow{margin-bottom:11px;}
-  .ctrlRow label{display:flex;justify-content:space-between;font-size:11.5px;color:var(--ink-soft);margin-bottom:3px;}
-  input[type=range]{width:100%;accent-color:var(--sage-deep);}
-  .swatchRow{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;}
-  .swatch{
-    width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;
-    box-shadow:0 0 0 1px rgba(0,0,0,.12) inset;
+  /* research */
+  .researchCard{
+    background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--sage);
+    border-radius:12px;padding:26px 28px;box-shadow:var(--shadow);
   }
-  .swatch.active{border-color:var(--ink);}
-  #delBtn{
-    margin-top:10px;width:100%;padding:8px;border-radius:8px;border:1px solid var(--rose-deep);
-    background:#fff; color:var(--rose-deep);font-size:12.5px;cursor:pointer;
-  }
-  #delBtn:hover{background:var(--rose-deep);color:#fff;}
+  .researchCard h3{font-family:var(--serif);font-size:20px;margin:0 0 4px;font-style:italic;font-weight:600;}
+  .researchCard .jobMeta{margin-bottom:12px;}
+  .researchCard p{margin:0 0 12px;color:var(--ink-soft);font-size:15px;}
 
-  /* right sidebar: palette */
-  #sidebar{
-    width:308px;flex:0 0 auto;background:var(--panel);border-left:1px solid var(--line);
-    display:flex;flex-direction:column;min-height:0;
+  /* education */
+  .eduGrid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+  .eduCard{
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:26px 28px;box-shadow:var(--shadow);position:relative;overflow:hidden;
   }
-  #tabs{display:flex;border-bottom:1px solid var(--line);}
-  .tabBtn{
-    flex:1;padding:13px 0;text-align:center;font-size:13px;letter-spacing:1px;cursor:pointer;
-    color:var(--ink-soft);border-bottom:2px solid transparent;
+  .eduCard::after{
+    content:"";position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;
+    background:radial-gradient(circle, var(--sage-tint) 0%, transparent 70%);
   }
-  .tabBtn.active{color:var(--ink);border-color:var(--sage-deep);font-weight:600;}
-  #cardGrid{flex:1;overflow-y:auto;padding:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start;}
-  .flowerCard{
-    border:1px solid var(--line);border-radius:12px;padding:8px 8px 10px;background:var(--cream);
-    cursor:pointer;transition:transform .12s, box-shadow .12s;text-align:center;
-  }
-  .flowerCard:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.5);}
-  .flowerCard img{width:100%;height:78px;object-fit:contain;display:block;}
-  .flowerCard .fname{font-size:12.5px;margin-top:4px;letter-spacing:.5px;}
-  .flowerCard .dots{display:flex;gap:4px;justify-content:center;margin-top:6px;}
-  .fdot{width:14px;height:14px;border-radius:50%;cursor:pointer;box-shadow:0 0 0 1px rgba(0,0,0,.12) inset;}
-  .fdot.active{box-shadow:0 0 0 2px var(--ink);}
+  .eduCard .school{font-family:var(--serif);font-size:20px;font-weight:700;margin:0 0 2px;}
+  .eduCard .degree{color:var(--rose);font-size:14.5px;font-weight:600;margin-bottom:6px;}
+  .eduCard .jobMeta{margin-bottom:12px;}
+  .eduCard p{margin:0;font-size:14px;color:var(--ink-soft);}
+  @media(max-width:720px){ .eduGrid{grid-template-columns:1fr;} }
 
-  #suggestZone{border-top:1px solid var(--line);padding:14px;flex:0 0 auto;max-height:40%;overflow-y:auto;}
-  #suggestZone h3{margin:0 0 8px;font-size:13px;letter-spacing:1px;color:var(--ink-soft);}
-  .presetRow{display:flex;gap:8px;margin-bottom:10px;}
-  .presetCard{
-    flex:1;border:1px solid var(--line);border-radius:10px;padding:8px;cursor:pointer;background:var(--cream);
-    text-align:center;transition:box-shadow .12s;
+  /* skills */
+  .skillGroup{margin-bottom:26px;}
+  .skillGroup:last-child{margin-bottom:0;}
+  .skillGroup h3{
+    font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--sage-deep);
+    margin:0 0 12px;display:flex;align-items:center;gap:10px;
   }
-  .presetCard:hover{box-shadow:0 4px 12px rgba(90,70,50,.14);}
-  .presetSwatches{display:flex;justify-content:center;gap:3px;margin-bottom:5px;}
-  .presetSwatches i{width:14px;height:14px;border-radius:50%;display:block;box-shadow:0 0 0 1px rgba(0,0,0,.1) inset;}
-  .presetCard .pname{font-size:11px;letter-spacing:.5px;}
-  #tipText{font-size:12px;line-height:1.75;color:var(--ink-soft);background:var(--cream-deep);
-    border-radius:8px;padding:10px 12px;}
+  .skillGroup h3::after{content:"";flex:1;height:1px;background:var(--line);}
+  .skillGroup .chips .chip{font-size:13px;padding:7px 15px;}
 
-  /* loading */
-  #loading{
-    position:fixed;inset:0;z-index:100;background:#121215;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
-    transition:opacity .6s ease;
+  /* contact */
+  .contact{text-align:center;padding:80px 0 70px;}
+  .contact h2{justify-content:center;}
+  .contact p{color:var(--ink-soft);max-width:520px;margin:12px auto 30px;}
+  footer{
+    border-top:1px solid var(--line);padding:26px 0 34px;text-align:center;
+    font-size:12.5px;color:var(--ink-faint);letter-spacing:.4px;
   }
-  #loading.hide{opacity:0;pointer-events:none;}
-  #loading .m{font-size:19px;letter-spacing:4px;color:var(--ink);}
-  #loading .bar{width:180px;height:2px;background:var(--line);overflow:hidden;}
-  #loading .bar i{display:block;height:100%;width:0;background:var(--sage-deep);animation:ld 1.6s ease-in-out forwards;}
-  @keyframes ld{to{width:100%;}}
 
-  @media (max-width:880px){
-    #main{flex-direction:column;}
-    #sidebar{width:100%;height:44%;border-left:none;border-top:1px solid var(--line);}
-    #selPanel{width:calc(100% - 36px);max-height:200px;}
-    #cardGrid{grid-template-columns:repeat(3,1fr);}
+  /* reveal animation */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease;}
+  .reveal.in{opacity:1;transform:none;}
+  @media(prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none;}
+    html{scroll-behavior:auto;}
   }
 </style>
 </head>
 <body>
 
-<div id="loading"><div class="m">瓶　间</div><div class="bar"><i></i></div></div>
-
-<div id="scrollStage">
-<div id="app">
-  <header>
-    <div class="brand">
-      <h1>瓶　间</h1>
-      <span class="tag">自由设计你的立体花艺</span>
+<nav>
+  <div class="wrap navRow">
+    <div class="monogram"><span class="dot"></span>Sydney Jiang</div>
+    <div class="navLinks">
+      <a href="#about">About</a>
+      <a href="#experience">Experience</a>
+      <a href="#research">Research</a>
+      <a href="#education">Education</a>
+      <a href="#skills">Skills</a>
+      <a href="#contact">Contact</a>
     </div>
-    <div class="tools">
-      <button class="toolBtn" id="randomBtn">随手一插</button>
-      <button class="toolBtn" id="clearBtn">清空重来</button>
-      <button class="toolBtn" id="exportBtn">导出图片</button>
+    <button id="themeBtn" title="Toggle theme" aria-label="Toggle color theme">◐</button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="heroArt" aria-hidden="true">
+    <svg viewBox="0 0 300 320">
+      <path d="M150 310 C150 240 150 180 150 120"/>
+      <path d="M150 200 C120 180 95 175 70 180 C95 155 125 160 150 185"/>
+      <path d="M150 160 C180 140 205 135 232 142 C208 115 176 122 150 148"/>
+      <path d="M150 120 C140 90 142 62 158 40"/>
+      <circle class="bud" cx="160" cy="36" r="9"/>
+      <circle class="bud" cx="70" cy="178" r="5"/>
+      <circle class="bud" cx="233" cy="141" r="5"/>
+      <path d="M150 250 C128 238 108 238 90 246"/>
+    </svg>
+  </div>
+  <div class="wrap">
+    <div class="eyebrow">Business &amp; Data Analytics</div>
+    <h1>Xin&nbsp;Ni (Sydney) Jiang</h1>
+    <p class="heroTag">I turn messy data into decisions — <em>segmentation, churn and credit-risk models</em> that moved real business metrics across marketing, securities, and banking.</p>
+    <div class="heroMeta">
+      <a href="#contact"><svg viewBox="0 0 24 24"><path d="M12 21c-4-4.5-7-8-7-11.5A7 7 0 0 1 19 9.5C19 13 16 16.5 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>New York, NY</a>
+      <a href="mailto:sydneyjiang00@gmail.com"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>sydneyjiang00@gmail.com</a>
+      <a href="https://www.linkedin.com/in/xin-ni-jiang-4a4721296/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2.5 2.5 0 0 1 5 0v4"/></svg>LinkedIn</a>
+      <a href="https://github.com/sydneyjiang000" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-2.85 17.54c.45.08.62-.2.62-.44v-1.54c-2.5.54-3.03-1.2-3.03-1.2-.41-1.04-1-1.32-1-1.32-.82-.56.06-.55.06-.55.9.06 1.38.93 1.38.93.8 1.38 2.11.98 2.63.75.08-.58.31-.98.57-1.2-2-.23-4.1-1-4.1-4.45 0-.98.35-1.78.93-2.41-.1-.23-.4-1.15.08-2.4 0 0 .76-.24 2.48.92a8.6 8.6 0 0 1 4.5 0c1.72-1.16 2.47-.92 2.47-.92.5 1.25.19 2.17.1 2.4.58.63.92 1.43.92 2.41 0 3.47-2.1 4.22-4.11 4.44.32.28.61.83.61 1.67v2.47c0 .24.16.53.63.44A9 9 0 0 0 12 3z"/></svg>GitHub</a>
     </div>
-  </header>
+    <div class="heroBtns">
+      <a class="btn primary" href="mailto:sydneyjiang00@gmail.com">Get in touch</a>
+      <a class="btn ghost" href="#experience">See my work ↓</a>
+    </div>
 
-  <div id="main">
-    <div id="viewport">
-      <div id="sceneBackdrop">
-        <img id="scrubFrame" src="assets/frames/f001.webp" alt="">
-        <div class="vignetteOverlay"></div>
-      </div>
-      <div id="canvasWrap"></div>
-      <div id="hint">上下滚动页面靠近窗台花瓶 · 点击花材卡片插入</div>
+    <div class="stats reveal">
+      <div class="stat"><b>0.82</b><span>AUC — churn prediction model in production use</span></div>
+      <div class="stat"><b>+22%</b><span>campaign CTR from segmentation-driven ad strategy</span></div>
+      <div class="stat"><b>30M+</b><span>customer records modeled for credit default risk</span></div>
+      <div class="stat"><b>3.91</b><span>GPA — BA Economics, Boston University</span></div>
+    </div>
+  </div>
+</header>
 
-      <div id="selPanel">
-        <h3>已插入的花材</h3>
-        <div id="bouquetList"></div>
-        <div id="emptyMsg">花瓶还是空的，从右侧选一支花材插进来吧。</div>
-        <div id="ctrlBlock" class="ctrlBlock" style="display:none;">
-          <div class="title" id="ctrlName">—</div>
-          <div class="cat" id="ctrlCat">—</div>
-          <div class="ctrlRow">
-            <label><span>高度</span><span id="hVal"></span></label>
-            <input type="range" id="hSlider" min="0.5" max="3.3" step="0.05">
-          </div>
-          <div class="ctrlRow">
-            <label><span>倾斜角度</span><span id="tVal"></span></label>
-            <input type="range" id="tSlider" min="0" max="55" step="1">
-          </div>
-          <div class="ctrlRow">
-            <label><span>朝向</span><span id="aVal"></span></label>
-            <input type="range" id="aSlider" min="0" max="360" step="1">
-          </div>
-          <div class="ctrlRow">
-            <label><span>颜色</span></label>
-            <div class="swatchRow" id="colorSwatches"></div>
-          </div>
-          <button id="delBtn">移除这支花</button>
+<main>
+  <section id="about">
+    <div class="wrap">
+      <h2><span class="num">01</span>About</h2>
+      <div class="aboutGrid reveal">
+        <div>
+          <p>I'm an analyst who likes the whole journey of a question — from a vague "why is retention slipping?" to a model, an experiment, and a recommendation someone actually acts on.</p>
+          <p>Across internships at <b>ARISO</b>, <b>CITIC Securities</b>, and <b>China Construction Bank</b>, I've built customer segmentation and churn models, designed A/B tests, ranked bond issuers by credit quality, and predicted loan defaults at 30-million-record scale. Alongside industry work, I've done empirical economics research on tacit collusion with Prof. Juan Ortner at Boston University.</p>
+          <p>I'm currently finishing my BA in Economics (Statistics minor) at Boston University, and will begin the <b>MS in Business Analytics at Columbia University</b> in Fall 2026.</p>
+        </div>
+        <div class="factCard">
+          <h3>Quick facts</h3>
+          <ul>
+            <li><span>Based in</span><span>New York, NY</span></li>
+            <li><span>Next up</span><span>Columbia MSBA '28</span></li>
+            <li><span>Focus</span><span>ML · A/B testing · Risk</span></li>
+            <li><span>Languages</span><span>English · Mandarin</span></li>
+            <li><span>Work auth</span><span>No H-1B sponsorship needed<br>(STEM OPT through 2031)</span></li>
+          </ul>
         </div>
       </div>
     </div>
+  </section>
 
-    <div id="sidebar">
-      <div id="tabs">
-        <div class="tabBtn active" data-cat="flower">花朵</div>
-        <div class="tabBtn" data-cat="greenery">叶材</div>
-      </div>
-      <div id="cardGrid"></div>
-      <div id="suggestZone">
-        <h3>配色建议 · 一键搭配</h3>
-        <div class="presetRow" id="presetRow"></div>
-        <div id="tipText">先插几支花，我再根据你的配色给建议～</div>
+  <section id="experience">
+    <div class="wrap">
+      <h2><span class="num">02</span>Experience</h2>
+      <p class="sectionLede">Three industries, one thread: quantitative models that changed how a team made decisions.</p>
+      <div class="timeline">
+
+        <article class="job reveal">
+          <div class="jobHead"><h3>ARISO</h3><span class="jobRole">Analyst Intern</span></div>
+          <div class="jobMeta">Remote / Santa Clara, CA · Sep 2025 – Present</div>
+          <ul>
+            <li>Engineered a customer segmentation model in Python (pandas, scikit-learn) on <b>50K+ user interactions</b>, surfacing 4 key personas that shaped targeted ad strategy and lifted campaign CTR by <b>22%+</b>.</li>
+            <li>Built a churn prediction model (logistic regression + random forest) reaching <b>AUC 0.82</b>; the marketing team adopted its retention recommendations to prioritize high-risk segments.</li>
+            <li>Designed A/B tests across 3 landing-page variants, identifying the highest-converting registration funnel and driving an <b>18% lift in conversion rate</b>.</li>
+            <li>Automated data pipelines connecting Google Ads and Search Console APIs to live Tableau dashboards — replacing <b>15 hours/week</b> of manual reporting.</li>
+          </ul>
+          <div class="chips">
+            <span class="chip">Python</span><span class="chip">scikit-learn</span><span class="chip">A/B Testing</span><span class="chip">Tableau</span>
+            <span class="chip metric">+22% CTR</span><span class="chip metric">AUC 0.82</span><span class="chip metric">+18% conversion</span>
+          </div>
+        </article>
+
+        <article class="job reveal">
+          <div class="jobHead"><h3>CITIC Securities</h3><span class="jobRole">Summer Intern</span></div>
+          <div class="jobMeta">Dalian, China · Jul 2025 – Sep 2025</div>
+          <ul>
+            <li>Conducted credit analysis on <b>10+ real-estate bond issuers</b> using Bloomberg and Wind data, synthesizing macro and sector findings into reports that supported portfolio positioning under volatile policy conditions.</li>
+            <li>Built a multi-factor credit ranking model (DSCR, interest coverage, land-bank valuation), cutting per-issuer scoring time from 2–3 hours to <b>under 1 hour</b>.</li>
+            <li>Applied NLP sentiment analysis (LDA &amp; BERT) to <b>500+ regulatory documents</b> to quantify policy-risk exposure; findings entered senior PMs' bond-allocation framework.</li>
+          </ul>
+          <div class="chips">
+            <span class="chip">Credit Analysis</span><span class="chip">NLP · LDA · BERT</span><span class="chip">Bloomberg / Wind</span>
+            <span class="chip metric">3× faster scoring</span>
+          </div>
+        </article>
+
+        <article class="job reveal">
+          <div class="jobHead"><h3>China Construction Bank</h3><span class="jobRole">Credit Risk Analyst Intern</span></div>
+          <div class="jobMeta">Dalian, China · Jun 2024 – Aug 2024</div>
+          <ul>
+            <li>Built a credit default prediction model on <b>30M+ customer records</b>, using stepwise feature selection to distill 1,104 variables down to the <b>105 most predictive</b> attributes.</li>
+            <li>Tuned logistic regression hyperparameters to raise model AUC from <b>68% to 75%</b>, enabling more reliable identification of high-risk borrowers before credit-line decisions.</li>
+            <li>Presented high-risk defaulter personas to the credit risk committee, directly informing credit-line adjustments across <b>50,000+ accounts</b>.</li>
+          </ul>
+          <div class="chips">
+            <span class="chip">Risk Modeling</span><span class="chip">Feature Selection</span><span class="chip">Logistic Regression</span>
+            <span class="chip metric">AUC 68→75%</span><span class="chip metric">30M+ records</span>
+          </div>
+        </article>
+
       </div>
     </div>
-  </div>
-</div>
-</div>
+  </section>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <section id="research">
+    <div class="wrap">
+      <h2><span class="num">03</span>Research</h2>
+      <p class="sectionLede">Empirical industrial organization — where economics meets text data.</p>
+      <div class="researchCard reveal">
+        <h3>Collusion in Plain Sight: Firms' Use of Public Announcements to Restrain Competition</h3>
+        <div class="jobMeta">Research Assistant · Supervisor: Prof. Juan Ortner, Boston University · Mar 2025 – Jul 2025</div>
+        <p>Analyzed earnings-call transcripts from major publicly traded firms to detect communication patterns indicative of tacit collusion in oligopolistic markets, contributing to an ongoing empirical study.</p>
+        <p>Designed an IO-theory-based classification framework and hand-labeled <b>1,000+ transcript excerpts</b>, building a structured dataset that supports NLP and econometric analysis of firm behavior in concentrated industries.</p>
+        <div class="chips">
+          <span class="chip">Industrial Organization</span><span class="chip">Text Classification</span><span class="chip">Econometrics</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="education">
+    <div class="wrap">
+      <h2><span class="num">04</span>Education</h2>
+      <div class="eduGrid">
+        <div class="eduCard reveal">
+          <p class="school">Columbia University</p>
+          <p class="degree">MS in Industrial Engineering — Business Analytics (MSBA)</p>
+          <div class="jobMeta">New York, NY · Sep 2026 – Jan 2028 (expected)</div>
+          <p>Coursework: Optimization Analytics, Machine Learning, Advanced Visualizations, Gen AI &amp; AI Strategies, Corporate Finance, Statistical Modeling, Data Science.</p>
+        </div>
+        <div class="eduCard reveal">
+          <p class="school">Boston University</p>
+          <p class="degree">BA in Economics · Minor in Statistics</p>
+          <div class="jobMeta">Boston, MA · Sep 2023 – May 2026 · GPA 3.91/4.0</div>
+          <p>Foundation in econometrics, statistical inference, and economic theory — plus research assistantship in empirical industrial organization.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="wrap">
+      <h2><span class="num">05</span>Skills</h2>
+      <p class="sectionLede">The toolkit behind the work.</p>
+      <div class="reveal">
+        <div class="skillGroup">
+          <h3>Programming</h3>
+          <div class="chips">
+            <span class="chip">Python (pandas · scikit-learn · NumPy)</span><span class="chip">SQL</span><span class="chip">R</span><span class="chip">Stata</span>
+          </div>
+        </div>
+        <div class="skillGroup">
+          <h3>Tools &amp; Visualization</h3>
+          <div class="chips">
+            <span class="chip">Tableau</span><span class="chip">Power BI</span><span class="chip">Advanced Excel (VBA · Pivot Tables)</span>
+          </div>
+        </div>
+        <div class="skillGroup">
+          <h3>Analytics &amp; Modeling</h3>
+          <div class="chips">
+            <span class="chip">Statistical Modeling</span><span class="chip">Machine Learning</span><span class="chip">A/B Testing</span>
+            <span class="chip">NLP / Text Analysis</span><span class="chip">Causal Inference</span><span class="chip">Cohort &amp; Funnel Analysis</span>
+            <span class="chip">Time-Series Analysis</span><span class="chip">Business Intelligence</span>
+          </div>
+        </div>
+        <div class="skillGroup">
+          <h3>Languages</h3>
+          <div class="chips">
+            <span class="chip">Mandarin (native)</span><span class="chip">English (fluent)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" class="contact">
+    <div class="wrap reveal">
+      <h2>Let's talk data.</h2>
+      <p>I'm open to analyst and data-science opportunities in New York and beyond. No H-1B sponsorship required — STEM OPT through 2031, with E-3 visa eligibility thereafter.</p>
+      <div class="heroBtns" style="justify-content:center;">
+        <a class="btn primary" href="mailto:sydneyjiang00@gmail.com">sydneyjiang00@gmail.com</a>
+        <a class="btn ghost" href="https://www.linkedin.com/in/xin-ni-jiang-4a4721296/" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn ghost" href="https://github.com/sydneyjiang000" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">Sydney Jiang · New York, NY · Built with care (and a little data) · <a href="flower/">🌸 flower studio</a></div>
+</footer>
+
 <script>
-(function(){
-"use strict";
-
-/* ============================================================
-   COLOR HELPERS
-   ============================================================ */
-function shade(hex, amt){
-  const c = new THREE.Color(hex);
-  const hsl = {h:0,s:0,l:0};
-  c.getHSL(hsl);
-  hsl.l = Math.min(1, Math.max(0, hsl.l + amt/100));
-  c.setHSL(hsl.h, hsl.s, hsl.l);
-  return c;
-}
-function hexToHSL(hex){
-  const c = new THREE.Color(hex);
-  const hsl = {h:0,s:0,l:0};
-  c.getHSL(hsl);
-  return hsl;
-}
-
-/* ============================================================
-   GEOMETRY HELPERS
-   ============================================================ */
-function petal(rx,ry,rz,color){
-  const geo = new THREE.SphereGeometry(1,10,8,0,Math.PI*0.85,0,Math.PI*0.6);
-  geo.scale(rx,ry,rz);
-  geo.translate(0,-ry*0.25,0);
-  const mat = new THREE.MeshStandardMaterial({color:color, side:THREE.DoubleSide, roughness:0.55});
-  return new THREE.Mesh(geo, mat);
-}
-function bud(size,color){
-  const geo = new THREE.SphereGeometry(size,10,8);
-  return new THREE.Mesh(geo, new THREE.MeshStandardMaterial({color:color, roughness:0.5}));
-}
-function leafShape(w,h,color){
-  const geo = new THREE.SphereGeometry(1,8,6);
-  geo.scale(w,h,w*0.35);
-  return new THREE.Mesh(geo, new THREE.MeshStandardMaterial({color:color, side:THREE.DoubleSide, roughness:0.55}));
-}
-function boxMesh(w,h,d,color){
-  return new THREE.Mesh(new THREE.BoxGeometry(w,h,d), new THREE.MeshStandardMaterial({color:color, roughness:0.6}));
-}
-function ringLayer(group,color,count,petalSize,tiltDeg,heightY,offset,elong){
-  for(let i=0;i<count;i++){
-    const p = petal(petalSize, petalSize*(elong||1.3), petalSize*0.55, color);
-    const a = (i/count)*Math.PI*2 + (offset||0);
-    p.rotation.order = 'YXZ';
-    p.rotation.y = a;
-    p.rotation.x = THREE.MathUtils.degToRad(90-tiltDeg);
-    p.position.set(0,heightY,0);
-    group.add(p);
-  }
-}
-
-/* ============================================================
-   SPECIES BUILDERS — each returns a THREE.Group "bloom"
-   attached at the tip of a stem (local origin = attach point)
-   ============================================================ */
-function buildRose(color){
-  const g = new THREE.Group();
-  g.add(bud(0.14, shade(color,-18)));
-  ringLayer(g,color,5,0.22,18,0.26,0,1.4);
-  ringLayer(g,color,7,0.32,40,0.14,0.4,1.3);
-  ringLayer(g,color,8,0.40,62,0.02,0.15,1.25);
-  return g;
-}
-function buildPeony(color){
-  const g = new THREE.Group();
-  g.add(bud(0.12, shade(color,-12)));
-  ringLayer(g,color,6,0.20,10,0.34,0,1.2);
-  ringLayer(g,color,8,0.30,28,0.25,0.3,1.15);
-  ringLayer(g,color,10,0.40,48,0.14,0.15,1.1);
-  ringLayer(g,color,10,0.46,68,0.02,0.10,1.05);
-  return g;
-}
-function buildRanunculus(color){
-  const g = new THREE.Group();
-  g.add(bud(0.08, shade(color,-12)));
-  for(let r=0;r<5;r++){
-    ringLayer(g,color, 6+r, 0.14+r*0.05, 15+r*13, 0.30-r*0.06, r*0.5, 1.1);
-  }
-  return g;
-}
-function buildAnemone(color){
-  const g = new THREE.Group();
-  ringLayer(g,color,7,0.42,82,0,0,1.05);
-  g.add(bud(0.13, 0x2b2320));
-  return g;
-}
-function buildTulip(color){
-  const g = new THREE.Group();
-  ringLayer(g,color,3,0.30,20,0.05,0,1.9);
-  ringLayer(g,color,3,0.28,26,0.10,Math.PI/3,1.85);
-  return g;
-}
-function buildHydrangea(color){
-  const g = new THREE.Group();
-  const n = 30;
-  for(let i=0;i<n;i++){
-    const phi = Math.acos(1-2*(i+0.5)/n);
-    const theta = Math.PI*(1+Math.sqrt(5))*i;
-    const r = 0.4;
-    const x = r*Math.sin(phi)*Math.cos(theta);
-    const y = r*Math.cos(phi)*0.8 + 0.4;
-    const z = r*Math.sin(phi)*Math.sin(theta);
-    const floret = new THREE.Group();
-    ringLayer(floret,color,4,0.09,60,0,0,1.0);
-    floret.position.set(x,y,z);
-    floret.lookAt(x*2,y*2+0.4,z*2);
-    g.add(floret);
-  }
-  return g;
-}
-function buildSunflower(color){
-  const g = new THREE.Group();
-  ringLayer(g,color,18,0.34,88,0,0,2.4);
-  const center = bud(0.22, 0x4a3320);
-  center.scale.y = 0.5;
-  center.position.y = 0.02;
-  g.add(center);
-  return g;
-}
-function buildDaisy(color){
-  const g = new THREE.Group();
-  ringLayer(g,'#f8f5ef',14,0.24,88,0,0,2.6);
-  const center = bud(0.13, color);
-  center.scale.y = 0.5;
-  g.add(center);
-  return g;
-}
-function buildLavender(color){
-  const g = new THREE.Group();
-  const n = 10;
-  for(let i=0;i<n;i++){
-    const y = i*0.09;
-    const s = 0.075*(1-i/n*0.5);
-    for(let k=0;k<3;k++){
-      const b = bud(s, color);
-      const a = k*(Math.PI*2/3) + i*0.7;
-      b.position.set(Math.cos(a)*0.045, y, Math.sin(a)*0.045);
-      g.add(b);
-    }
-  }
-  return g;
-}
-function buildBabysBreath(color){
-  const g = new THREE.Group();
-  for(let i=0;i<7;i++){
-    const a = (i/7)*Math.PI*2;
-    const len = 0.35 + Math.random()*0.25;
-    const branch = boxMesh(0.012,len,0.012, 0x8a9a7e);
-    branch.position.set(Math.cos(a)*len*0.4, len*0.5, Math.sin(a)*len*0.4);
-    branch.rotation.z = Math.cos(a)*0.5;
-    branch.rotation.x = Math.sin(a)*0.5;
-    g.add(branch);
-    for(let j=0;j<3;j++){
-      const dot = bud(0.045, color);
-      dot.position.set(
-        Math.cos(a)*len*0.8 + (Math.random()-0.5)*0.1,
-        len*0.9 + (Math.random()-0.5)*0.1,
-        Math.sin(a)*len*0.8 + (Math.random()-0.5)*0.1
-      );
-      g.add(dot);
-    }
-  }
-  return g;
-}
-function buildEucalyptus(color){
-  const g = new THREE.Group();
-  for(let i=0;i<6;i++){
-    const y = i*0.16;
-    const l1 = leafShape(0.11,0.15,color); l1.position.set(0.09,y,0); l1.rotation.z=-0.3;
-    const l2 = leafShape(0.11,0.15,color); l2.position.set(-0.09,y,0); l2.rotation.z=0.3;
-    g.add(l1,l2);
-  }
-  return g;
-}
-function buildFern(color){
-  const g = new THREE.Group();
-  for(let i=0;i<9;i++){
-    const t = i/9;
-    const y = t*0.9;
-    const s = 0.09*(1-t*0.6);
-    const l1 = leafShape(s,s*1.6,color); l1.position.set(0.06+t*0.03,y,0); l1.rotation.z=-0.6;
-    const l2 = leafShape(s,s*1.6,color); l2.position.set(-0.06-t*0.03,y,0); l2.rotation.z=0.6;
-    g.add(l1,l2);
-  }
-  return g;
-}
-
-const SPECIES = [
-  {id:'rose', name:'玫瑰', category:'flower', colors:['#c9414d','#e8879a','#f6e6d8','#f2c14e'], build:buildRose},
-  {id:'peony', name:'芍药', category:'flower', colors:['#e8a7b0','#f6d9df','#c9414d','#f2e6e0'], build:buildPeony},
-  {id:'ranunculus', name:'毛茛', category:'flower', colors:['#f2c14e','#e8879a','#f6e6d8','#c9414d','#f6d9df'], build:buildRanunculus},
-  {id:'anemone', name:'银莲花', category:'flower', colors:['#f6f2ea','#c94d6b','#8a3b8a'], build:buildAnemone},
-  {id:'tulip', name:'郁金香', category:'flower', colors:['#c9414d','#f2c14e','#8a3b8a','#f6e6d8','#e8879a'], build:buildTulip},
-  {id:'hydrangea', name:'绣球', category:'flower', colors:['#8aa9c9','#c9a7d9','#f6f2ea','#8a9a7e'], build:buildHydrangea},
-  {id:'sunflower', name:'向日葵', category:'flower', colors:['#f2c14e','#e89a3b'], build:buildSunflower},
-  {id:'daisy', name:'雏菊', category:'flower', colors:['#f2c14e','#e8879a','#8a3b8a'], build:buildDaisy},
-  {id:'lavender', name:'薰衣草', category:'greenery', colors:['#8a6fa3','#b39ddb'], build:buildLavender},
-  {id:'babysbreath', name:'满天星', category:'greenery', colors:['#f6f2ea','#f2d9e0'], build:buildBabysBreath},
-  {id:'eucalyptus', name:'尤加利叶', category:'greenery', colors:['#8a9a7e','#a9b99e','#6b7d5f'], build:buildEucalyptus},
-  {id:'fern', name:'蕨叶', category:'greenery', colors:['#5c6b4a','#7a8a6a'], build:buildFern},
-];
-const SPECIES_BY_ID = {};
-SPECIES.forEach(s=> SPECIES_BY_ID[s.id]=s);
-
-/* ============================================================
-   PRESET ARRANGEMENTS
-   ============================================================ */
-const PRESETS = [
-  {name:'奶油莫兰迪', swatches:['#e8a7b0','#f6d9df','#8a9a7e'], items:[
-    {species:'peony',color:'#e8a7b0',height:2.6,tilt:14,azimuth:20},
-    {species:'ranunculus',color:'#f6d9df',height:2.1,tilt:24,azimuth:120},
-    {species:'rose',color:'#f6e6d8',height:2.9,tilt:8,azimuth:220},
-    {species:'eucalyptus',color:'#8a9a7e',height:2.4,tilt:32,azimuth:300},
-    {species:'babysbreath',color:'#f6f2ea',height:2.7,tilt:20,azimuth:60},
-  ]},
-  {name:'热烈日落', swatches:['#c9414d','#f2c14e','#e89a3b'], items:[
-    {species:'sunflower',color:'#f2c14e',height:2.8,tilt:10,azimuth:0},
-    {species:'rose',color:'#c9414d',height:2.3,tilt:20,azimuth:110},
-    {species:'ranunculus',color:'#f2c14e',height:2.0,tilt:28,azimuth:200},
-    {species:'fern',color:'#5c6b4a',height:1.8,tilt:38,azimuth:280},
-    {species:'tulip',color:'#c9414d',height:2.6,tilt:14,azimuth:330},
-  ]},
-  {name:'静谧薰衣草', swatches:['#8a6fa3','#f6f2ea','#8a9a7e'], items:[
-    {species:'lavender',color:'#8a6fa3',height:2.9,tilt:16,azimuth:10},
-    {species:'anemone',color:'#f6f2ea',height:2.2,tilt:26,azimuth:140},
-    {species:'hydrangea',color:'#c9a7d9',height:2.4,tilt:18,azimuth:250},
-    {species:'eucalyptus',color:'#8a9a7e',height:2.0,tilt:34,azimuth:320},
-  ]},
-];
-
-/* ============================================================
-   THREE.JS SCENE
-   ============================================================ */
-const wrap = document.getElementById('canvasWrap');
-const renderer = new THREE.WebGLRenderer({antialias:true, alpha:true, preserveDrawingBuffer:true});
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
-renderer.setClearColor(0x000000, 0);
-renderer.shadowMap.enabled = true;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 0.92;
-wrap.appendChild(renderer.domElement);
-
-const scene = new THREE.Scene();
-// background left null on purpose: the forest-cabin window (#sceneBackdrop, CSS)
-// shows through the transparent canvas instead of a rendered scene.background.
-
-const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
-let target = new THREE.Vector3(0,3.71,0);
-const theta = 0, phi = 1.42;
-let radius = 12.52;
-
-function updateCamera(){
-  camera.position.set(
-    target.x + radius*Math.sin(phi)*Math.sin(theta),
-    target.y + radius*Math.cos(phi),
-    target.z + radius*Math.sin(phi)*Math.cos(theta)
-  );
-  camera.lookAt(target);
-}
-
-/* ============================================================
-   SCROLL-SCRUBBED WINDOW-VIEW FOOTAGE
-   The vase in assets/frames/*.webp holds still while the camera in the
-   footage dollies in on it over 121 frames. These control points were
-   measured directly off the footage (rim/base pixel position at 5 sample
-   frames) and solved for the (radius, target.y) this app's camera needs
-   so the flower anchor (RIM_Y) lines up with the real vase's opening at
-   every frame, not just the sampled ones — piecewise-linear between them.
-   ============================================================ */
-const TOTAL_FRAMES = 121;
-const SCRUB_CTRL = [
-  {t:0.00, radius:12.52, targetY:3.71},
-  {t:0.25, radius:11.02, targetY:3.378},
-  {t:0.50, radius:10.22, targetY:3.207},
-  {t:0.75, radius:8.815, targetY:2.792},
-  {t:1.00, radius:6.727, targetY:2.174},
-];
-function scrubInterp(t, key){
-  for(let i=0;i<SCRUB_CTRL.length-1;i++){
-    const a = SCRUB_CTRL[i], b = SCRUB_CTRL[i+1];
-    if(t>=a.t && t<=b.t){
-      const f = (t-a.t)/(b.t-a.t);
-      return a[key] + (b[key]-a[key])*f;
-    }
-  }
-  return SCRUB_CTRL[SCRUB_CTRL.length-1][key];
-}
-
-const scrubFrameEl = document.getElementById('scrubFrame');
-const scrollStageEl = document.getElementById('scrollStage');
-const frameCache = [];
-for(let i=1;i<=TOTAL_FRAMES;i++){
-  const im = new Image();
-  im.src = 'assets/frames/f'+String(i).padStart(3,'0')+'.webp';
-  frameCache.push(im);
-}
-let lastFrameIdx = -1;
-function updateScrub(){
-  const maxScroll = scrollStageEl.offsetHeight - window.innerHeight;
-  const t = maxScroll>0 ? Math.min(1,Math.max(0, window.scrollY/maxScroll)) : 0;
-  const frameIdx = Math.min(TOTAL_FRAMES, Math.max(1, Math.round(t*(TOTAL_FRAMES-1))+1));
-  if(frameIdx!==lastFrameIdx){
-    scrubFrameEl.src = frameCache[frameIdx-1].src;
-    lastFrameIdx = frameIdx;
-  }
-  radius = scrubInterp(t,'radius');
-  target.y = scrubInterp(t,'targetY');
-  updateCamera();
-}
-let scrubQueued = false;
-window.addEventListener('scroll', ()=>{
-  if(scrubQueued) return;
-  scrubQueued = true;
-  requestAnimationFrame(()=>{ scrubQueued=false; updateScrub(); });
-}, {passive:true});
-
-scene.add(new THREE.HemisphereLight(0x8895a0, 0x0e0d0c, 0.5));
-const key = new THREE.DirectionalLight(0xb9c4bd, 1.05);
-key.position.set(-1.5,4.6,4.5);
-key.castShadow = true;
-key.shadow.mapSize.set(1024,1024);
-key.shadow.camera.left=-4; key.shadow.camera.right=4;
-key.shadow.camera.top=4; key.shadow.camera.bottom=-4;
-key.shadow.radius = 3;
-scene.add(key);
-const fillLight = new THREE.DirectionalLight(0x5c6b6a, 0.4);
-fillLight.position.set(2.5,2.2,-3.5);
-scene.add(fillLight);
-const rimLight = new THREE.DirectionalLight(0x8fa0a0, 0.4);
-rimLight.position.set(0,3.6,-6);
-scene.add(rimLight);
-
-// environment for glass reflections — a soft misty-forest gradient so the
-// glass picks up the same cool green/grey light as the window behind it
-const pmrem = new THREE.PMREMGenerator(renderer);
-pmrem.compileEquirectangularShader();
-function makeEnvTexture(){
-  const c = document.createElement('canvas'); c.width=256;c.height=128;
-  const ctx = c.getContext('2d');
-  const g = ctx.createLinearGradient(0,0,0,128);
-  g.addColorStop(0,'#c7cdb9');
-  g.addColorStop(0.35,'#8a958d');
-  g.addColorStop(0.65,'#3f4d3f');
-  g.addColorStop(1,'#171310');
-  ctx.fillStyle=g; ctx.fillRect(0,0,256,128);
-  const tex = new THREE.CanvasTexture(c);
-  tex.mapping = THREE.EquirectangularReflectionMapping;
-  return tex;
-}
-const envRaw = makeEnvTexture();
-scene.environment = pmrem.fromEquirectangular(envRaw).texture;
-envRaw.dispose();
-
-// invisible shadow-catcher — grounds the vase with a soft contact shadow
-// without drawing any geometry of its own, so the real photo shows through
-const floor = new THREE.Mesh(
-  new THREE.CircleGeometry(2.2,48),
-  new THREE.ShadowMaterial({opacity:0.38})
-);
-floor.rotation.x = -Math.PI/2;
-floor.position.y = 0;
-floor.receiveShadow = true;
-scene.add(floor);
-
-/* ---- vase ----
-   No 3D vase mesh here on purpose: the vase itself is the glass carafe
-   already sitting in the window-view footage (assets/frames). Flowers are
-   anchored at the same rim height/radius the old modeled vase used, so
-   they plant into the same spot the real vase's opening occupies. */
-const vaseGroup = new THREE.Group();
-scene.add(vaseGroup);
-
-const RIM_Y = 2.15;
-const INSERT_R = 0.22;
-
-/* ============================================================
-   FLOWER INSTANCES
-   ============================================================ */
-let instances = [];
-let nextId = 1;
-let selectedId = null;
-
-function disposeGroup(g){
-  g.traverse(o=>{
-    if(o.geometry) o.geometry.dispose();
-    if(o.material) o.material.dispose();
+  // theme toggle — follows system preference, remembers manual choice
+  const root = document.documentElement;
+  const saved = localStorage.getItem('theme');
+  if (saved) root.dataset.theme = saved;
+  else if (matchMedia('(prefers-color-scheme: dark)').matches) root.dataset.theme = 'dark';
+  document.getElementById('themeBtn').addEventListener('click', () => {
+    const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    localStorage.setItem('theme', next);
   });
-}
 
-function createInstance(speciesId, colorHex, opts){
-  const species = SPECIES_BY_ID[speciesId];
-  const id = nextId++;
-  const insertAngle = Math.random()*Math.PI*2;
-  const jitter = 0.55 + Math.random()*0.45;
-  const px = Math.cos(insertAngle)*INSERT_R*jitter;
-  const pz = Math.sin(insertAngle)*INSERT_R*jitter;
+  // scroll-reveal
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-  const anchor = new THREE.Group();
-  anchor.position.set(px, RIM_Y, pz);
-  vaseGroup.add(anchor);
-
-  const leanPivot = new THREE.Group();
-  anchor.add(leanPivot);
-  const tiltPivot = new THREE.Group();
-  leanPivot.add(tiltPivot);
-
-  const upperStem = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.025,0.03,1,6),
-    new THREE.MeshStandardMaterial({color:0x7a8a6a, roughness:0.65})
-  );
-  upperStem.castShadow = true;
-  tiltPivot.add(upperStem);
-
-  const hitTarget = new THREE.Mesh(
-    new THREE.SphereGeometry(0.42,8,6),
-    new THREE.MeshBasicMaterial({visible:false})
-  );
-  tiltPivot.add(hitTarget);
-
-  const inst = {
-    id, speciesId, color:colorHex,
-    height: (opts&&opts.height) || (1.6+Math.random()*1.0),
-    tilt: (opts&&opts.tilt!=null) ? opts.tilt : Math.round(8+Math.random()*22),
-    azimuth: (opts&&opts.azimuth!=null) ? opts.azimuth : Math.round(Math.random()*360),
-    anchor, leanPivot, tiltPivot, upperStem, ornament:null, hitTarget
-  };
-  hitTarget.userData.flowerId = id;
-  buildOrnament(inst);
-  applyTransform(inst);
-  instances.push(inst);
-  raycastTargets.push(hitTarget);
-  return inst;
-}
-
-function buildOrnament(inst){
-  if(inst.ornament){
-    inst.tiltPivot.remove(inst.ornament);
-    disposeGroup(inst.ornament);
-  }
-  const species = SPECIES_BY_ID[inst.speciesId];
-  const g = species.build(inst.color);
-  g.traverse(o=>{ o.castShadow = true; });
-  inst.tiltPivot.add(g);
-  inst.ornament = g;
-}
-
-function applyTransform(inst){
-  inst.upperStem.scale.y = inst.height;
-  inst.upperStem.position.y = inst.height/2;
-  inst.ornament.position.y = inst.height;
-  inst.hitTarget.position.y = inst.height;
-  inst.leanPivot.rotation.y = THREE.MathUtils.degToRad(inst.azimuth);
-  inst.tiltPivot.rotation.z = THREE.MathUtils.degToRad(inst.tilt);
-}
-
-function removeInstance(id){
-  const idx = instances.findIndex(i=>i.id===id);
-  if(idx<0) return;
-  const inst = instances[idx];
-  vaseGroup.remove(inst.anchor);
-  disposeGroup(inst.anchor);
-  const rti = raycastTargets.indexOf(inst.hitTarget);
-  if(rti>=0) raycastTargets.splice(rti,1);
-  instances.splice(idx,1);
-  if(selectedId===id) selectedId=null;
-}
-
-function clearAll(){
-  instances.slice().forEach(i=> removeInstance(i.id));
-  refreshBouquetUI();
-  refreshCtrlUI();
-  refreshSuggestions();
-}
-
-function addFlower(speciesId, colorHex, opts){
-  const inst = createInstance(speciesId, colorHex, opts);
-  selectedId = inst.id;
-  refreshBouquetUI();
-  refreshCtrlUI();
-  refreshSuggestions();
-  return inst;
-}
-
-/* ============================================================
-   RAYCAST SELECTION
-   ============================================================ */
-const raycastTargets = [];
-const raycaster = new THREE.Raycaster();
-const pointerNDC = new THREE.Vector2();
-
-function selectFlower(id){
-  selectedId = id;
-  refreshBouquetUI();
-  refreshCtrlUI();
-}
-
-/* ============================================================
-   UI — palette cards
-   ============================================================ */
-let activeCat = 'flower';
-const activeColor = {};
-SPECIES.forEach(s=> activeColor[s.id] = s.colors[0]);
-
-const cardGrid = document.getElementById('cardGrid');
-function renderCards(){
-  cardGrid.innerHTML='';
-  SPECIES.filter(s=>s.category===activeCat).forEach(s=>{
-    const card = document.createElement('div');
-    card.className='flowerCard';
-    const img = document.createElement('img');
-    img.src = s.thumb || '';
-    card.appendChild(img);
-    const nm = document.createElement('div');
-    nm.className='fname'; nm.textContent=s.name;
-    card.appendChild(nm);
-    const dots = document.createElement('div');
-    dots.className='dots';
-    s.colors.forEach(c=>{
-      const d = document.createElement('div');
-      d.className='fdot' + (activeColor[s.id]===c?' active':'');
-      d.style.background=c;
-      d.addEventListener('click', e=>{
-        e.stopPropagation();
-        activeColor[s.id]=c;
-        renderCards();
-      });
-      dots.appendChild(d);
+  // nav active state
+  const links = [...document.querySelectorAll('.navLinks a')];
+  const secObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.toggle('active', l.hash === '#' + e.target.id));
+      }
     });
-    card.appendChild(dots);
-    card.addEventListener('click', ()=>{
-      addFlower(s.id, activeColor[s.id]);
-    });
-    cardGrid.appendChild(card);
-  });
-}
-document.querySelectorAll('.tabBtn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.tabBtn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    activeCat = btn.dataset.cat;
-    renderCards();
-  });
-});
-
-/* ============================================================
-   UI — bouquet list + control panel
-   ============================================================ */
-const bouquetList = document.getElementById('bouquetList');
-const emptyMsg = document.getElementById('emptyMsg');
-const ctrlBlock = document.getElementById('ctrlBlock');
-
-function refreshBouquetUI(){
-  bouquetList.innerHTML='';
-  emptyMsg.style.display = instances.length? 'none':'block';
-  instances.forEach(inst=>{
-    const species = SPECIES_BY_ID[inst.speciesId];
-    const chip = document.createElement('div');
-    chip.className='chip' + (inst.id===selectedId?' active':'');
-    const dot = document.createElement('span');
-    dot.className='dot'; dot.style.background=inst.color;
-    chip.appendChild(dot);
-    const label = document.createElement('span');
-    label.textContent = species.name;
-    chip.appendChild(label);
-    const x = document.createElement('span');
-    x.className='x'; x.textContent='×';
-    x.addEventListener('click', e=>{
-      e.stopPropagation();
-      removeInstance(inst.id);
-      refreshBouquetUI(); refreshCtrlUI(); refreshSuggestions();
-    });
-    chip.appendChild(x);
-    chip.addEventListener('click', ()=> selectFlower(inst.id));
-    bouquetList.appendChild(chip);
-  });
-}
-
-const hSlider=document.getElementById('hSlider'), tSlider=document.getElementById('tSlider'), aSlider=document.getElementById('aSlider');
-const hVal=document.getElementById('hVal'), tVal=document.getElementById('tVal'), aVal=document.getElementById('aVal');
-const colorSwatches = document.getElementById('colorSwatches');
-const ctrlName=document.getElementById('ctrlName'), ctrlCat=document.getElementById('ctrlCat');
-const CAT_LABEL = {flower:'花朵', greenery:'叶材'};
-
-function refreshCtrlUI(){
-  const inst = instances.find(i=>i.id===selectedId);
-  if(!inst){ ctrlBlock.style.display='none'; return; }
-  ctrlBlock.style.display='block';
-  const species = SPECIES_BY_ID[inst.speciesId];
-  ctrlName.textContent = species.name;
-  ctrlCat.textContent = CAT_LABEL[species.category];
-  hSlider.value = inst.height; hVal.textContent = inst.height.toFixed(2);
-  tSlider.value = inst.tilt; tVal.textContent = Math.round(inst.tilt)+'°';
-  aSlider.value = inst.azimuth; aVal.textContent = Math.round(inst.azimuth)+'°';
-  colorSwatches.innerHTML='';
-  species.colors.forEach(c=>{
-    const sw = document.createElement('div');
-    sw.className='swatch' + (inst.color===c?' active':'');
-    sw.style.background=c;
-    sw.addEventListener('click', ()=>{
-      inst.color = c;
-      buildOrnament(inst);
-      applyTransform(inst);
-      refreshCtrlUI();
-      refreshBouquetUI();
-      refreshSuggestions();
-    });
-    colorSwatches.appendChild(sw);
-  });
-}
-hSlider.addEventListener('input', ()=>{
-  const inst = instances.find(i=>i.id===selectedId); if(!inst) return;
-  inst.height = parseFloat(hSlider.value); hVal.textContent=inst.height.toFixed(2);
-  applyTransform(inst);
-});
-tSlider.addEventListener('input', ()=>{
-  const inst = instances.find(i=>i.id===selectedId); if(!inst) return;
-  inst.tilt = parseFloat(tSlider.value); tVal.textContent=Math.round(inst.tilt)+'°';
-  applyTransform(inst);
-});
-aSlider.addEventListener('input', ()=>{
-  const inst = instances.find(i=>i.id===selectedId); if(!inst) return;
-  inst.azimuth = parseFloat(aSlider.value); aVal.textContent=Math.round(inst.azimuth)+'°';
-  applyTransform(inst);
-});
-document.getElementById('delBtn').addEventListener('click', ()=>{
-  if(selectedId==null) return;
-  removeInstance(selectedId);
-  refreshBouquetUI(); refreshCtrlUI(); refreshSuggestions();
-});
-
-/* ============================================================
-   SUGGESTIONS
-   ============================================================ */
-const presetRow = document.getElementById('presetRow');
-function renderPresets(){
-  presetRow.innerHTML='';
-  PRESETS.forEach(p=>{
-    const card = document.createElement('div');
-    card.className='presetCard';
-    const sw = document.createElement('div');
-    sw.className='presetSwatches';
-    p.swatches.forEach(c=>{
-      const i = document.createElement('i'); i.style.background=c; sw.appendChild(i);
-    });
-    card.appendChild(sw);
-    const nm = document.createElement('div');
-    nm.className='pname'; nm.textContent=p.name;
-    card.appendChild(nm);
-    card.addEventListener('click', ()=>{
-      clearAll();
-      p.items.forEach(it=> addFlower(it.species, it.color, it));
-      selectedId=null;
-      refreshBouquetUI(); refreshCtrlUI();
-    });
-    presetRow.appendChild(card);
-  });
-}
-renderPresets();
-
-const tipText = document.getElementById('tipText');
-function refreshSuggestions(){
-  if(instances.length===0){
-    tipText.textContent = '先插几支花，我再根据你的配色给建议～也可以直接点上面的预设搭配一键生成。';
-    return;
-  }
-  const hues = instances.map(i=> hexToHSL(i.color).h*360);
-  const hasGreenery = instances.some(i=> SPECIES_BY_ID[i.speciesId].category==='greenery');
-  let mean = hues.reduce((a,b)=>a+b,0)/hues.length;
-  const variance = hues.reduce((a,b)=>{
-    let d = Math.abs(b-mean); if(d>180) d=360-d;
-    return a+d*d;
-  },0)/hues.length;
-  const spread = Math.sqrt(variance);
-
-  let msg='';
-  if(spread < 18){
-    const compHue = Math.round((mean+180)%360);
-    msg = '你目前用的是比较统一的邻近色，很和谐。想更有层次的话，可以加一点色相约 '+compHue+'° 的互补色小花点缀，会让整体更跳一点。';
-  } else if(spread > 55){
-    msg = '现在的色相分布比较分散，颜色会有点"抢戏"。建议保留2-3个主色，其余用绿叶材（尤加利叶/蕨叶）过渡，画面会更沉静统一。';
-  } else {
-    msg = '目前的配色层次感不错，冷暖过渡比较自然，可以再补一点分量相近的花材让整体更饱满。';
-  }
-  if(!hasGreenery){
-    msg += ' 另外还没有叶材，加一点尤加利叶或满天星能让花束更有呼吸感。';
-  }
-  tipText.textContent = msg;
-}
-
-/* ============================================================
-   THUMBNAILS (offscreen render of each species)
-   ============================================================ */
-function renderThumbnails(){
-  const thumbScene = new THREE.Scene();
-  thumbScene.background = null;
-  const tCam = new THREE.PerspectiveCamera(32,1,0.05,20);
-  const tKey = new THREE.DirectionalLight(0xffffff,1.2); tKey.position.set(2,3,3); thumbScene.add(tKey);
-  thumbScene.add(new THREE.HemisphereLight(0xffffff,0x999999,0.9));
-
-  const prevSize = new THREE.Vector2();
-  renderer.getSize(prevSize);
-  renderer.setSize(220,220,false);
-  renderer.setClearColor(0x121215,0);
-
-  SPECIES.forEach(s=>{
-    const g = s.build(s.colors[0]);
-    thumbScene.add(g);
-    const box = new THREE.Box3().setFromObject(g);
-    const size = new THREE.Vector3(); box.getSize(size);
-    const center = new THREE.Vector3(); box.getCenter(center);
-    const maxDim = Math.max(size.x,size.y,size.z,0.3);
-    const dist = maxDim*2.3;
-    tCam.position.set(center.x+dist*0.6, center.y+dist*0.5, center.z+dist*0.75);
-    tCam.lookAt(center);
-    tCam.aspect = 1; tCam.updateProjectionMatrix();
-    renderer.render(thumbScene, tCam);
-    s.thumb = renderer.domElement.toDataURL('image/png');
-    thumbScene.remove(g);
-    disposeGroup(g);
-  });
-
-  renderer.setSize(prevSize.x, prevSize.y, false);
-}
-
-/* ============================================================
-   INTERACTION — click/tap to select a flower
-   (the camera itself is driven entirely by page-scroll scrubbing, see
-   updateScrub() above — no drag-orbit or wheel-zoom on the canvas)
-   ============================================================ */
-let dragged=false, downX=0, downY=0;
-const dom = renderer.domElement;
-dom.addEventListener('pointerdown', e=>{
-  dragged=false; downX=e.clientX; downY=e.clientY;
-});
-dom.addEventListener('pointermove', e=>{
-  if(Math.abs(e.clientX-downX)+Math.abs(e.clientY-downY)>3) dragged=true;
-});
-window.addEventListener('pointerup', e=>{
-  if(!dragged) handleTap(e.clientX,e.clientY);
-});
-
-function handleTap(clientX,clientY){
-  const rect = dom.getBoundingClientRect();
-  pointerNDC.x = ((clientX-rect.left)/rect.width)*2-1;
-  pointerNDC.y = -((clientY-rect.top)/rect.height)*2+1;
-  raycaster.setFromCamera(pointerNDC, camera);
-  const hits = raycaster.intersectObjects(raycastTargets);
-  if(hits.length){
-    selectFlower(hits[0].object.userData.flowerId);
-  }
-}
-
-/* ============================================================
-   TOOLBAR
-   ============================================================ */
-document.getElementById('clearBtn').addEventListener('click', clearAll);
-document.getElementById('randomBtn').addEventListener('click', ()=>{
-  clearAll();
-  const preset = PRESETS[Math.floor(Math.random()*PRESETS.length)];
-  preset.items.forEach(it=>{
-    const jitter = {
-      species: it.species, color: it.color,
-      height: it.height + (Math.random()-0.5)*0.5,
-      tilt: Math.max(0, it.tilt + (Math.random()-0.5)*14),
-      azimuth: (it.azimuth + (Math.random()-0.5)*40 + 360)%360
-    };
-    addFlower(jitter.species, jitter.color, jitter);
-  });
-  selectedId=null;
-  refreshBouquetUI(); refreshCtrlUI();
-});
-document.getElementById('exportBtn').addEventListener('click', ()=>{
-  renderer.render(scene, camera);
-  // composite the current window-view frame (a plain <img>, not part of the
-  // WebGL canvas) behind the flower render so the export isn't just a
-  // transparent PNG of the flowers alone
-  const w = renderer.domElement.width, h = renderer.domElement.height;
-  const out = document.createElement('canvas');
-  out.width = w; out.height = h;
-  const ctx = out.getContext('2d');
-  const objPosX=0.51, objPosY=0.5;
-  const scale = Math.max(w/scrubFrameEl.naturalWidth, h/scrubFrameEl.naturalHeight);
-  const drawW = scrubFrameEl.naturalWidth*scale, drawH = scrubFrameEl.naturalHeight*scale;
-  ctx.drawImage(scrubFrameEl, (w-drawW)*objPosX, (h-drawH)*objPosY, drawW, drawH);
-  ctx.drawImage(renderer.domElement, 0, 0, w, h);
-  const link = document.createElement('a');
-  link.download = '我的插花作品.png';
-  link.href = out.toDataURL('image/png');
-  link.click();
-});
-
-/* ============================================================
-   RESIZE / LOOP
-   ============================================================ */
-function onResize(){
-  const w = wrap.clientWidth, h = wrap.clientHeight;
-  renderer.setSize(w,h);
-  camera.aspect = w/h;
-  camera.updateProjectionMatrix();
-  updateScrub();
-}
-window.addEventListener('resize', onResize);
-
-function animate(){
-  requestAnimationFrame(animate);
-  renderer.render(scene, camera);
-}
-
-/* ============================================================
-   INIT
-   ============================================================ */
-function init(){
-  onResize();
-  renderThumbnails();
-  renderCards();
-  updateScrub();
-  animate();
-  setTimeout(()=>{
-    document.getElementById('loading').classList.add('hide');
-  }, 500);
-}
-window.addEventListener('load', init);
-
-})();
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  document.querySelectorAll('main section, header.hero').forEach(s => { if (s.id) secObserver.observe(s); });
 </script>
 </body>
 </html>
