@@ -161,6 +161,71 @@
   }
   .chip.metric{background:var(--rose-tint);color:var(--rose);}
 
+  /* projects — record crate */
+  .player{
+    display:grid;grid-template-columns:1.4fr 1fr;gap:0;
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);overflow:hidden;margin-bottom:36px;
+  }
+  .playerVisual{
+    background:#0c0c0f;display:flex;align-items:center;justify-content:center;
+    min-height:300px;border-right:1px solid var(--line);
+  }
+  .playerVisual img{width:100%;height:100%;max-height:460px;object-fit:contain;transition:opacity .3s;}
+  .playerInfo{padding:26px 28px;display:flex;flex-direction:column;gap:12px;align-items:flex-start;}
+  .npLabel{
+    font-size:11px;letter-spacing:3px;color:var(--rose);text-transform:uppercase;
+    display:flex;align-items:center;gap:9px;
+  }
+  .npLabel::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--rose);animation:npPulse 1.6s ease-in-out infinite;}
+  @keyframes npPulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .playerInfo h3{font-family:var(--serif);font-size:22px;margin:0;font-weight:700;}
+  .npResult{
+    margin:0;font-size:14.5px;color:var(--sage-deep);
+    border-left:3px solid var(--sage);padding-left:12px;
+  }
+  .npDesc{margin:0;font-size:14.5px;color:var(--ink-soft);}
+  .npLinks{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto;padding-top:6px;}
+  .npLinks a{
+    display:inline-block;padding:8px 18px;border-radius:20px;font-size:13px;letter-spacing:.3px;
+    border:1px solid var(--sage-deep);color:var(--sage-deep);
+  }
+  .npLinks a:hover{background:var(--sage-tint);text-decoration:none;}
+  .npLinks a.live{background:var(--sage-deep);color:var(--bg);}
+  .npLinks a.live:hover{background:var(--sage);}
+  @media(max-width:820px){
+    .player{grid-template-columns:1fr;}
+    .playerVisual{border-right:none;border-bottom:1px solid var(--line);min-height:200px;}
+  }
+
+  .crate{display:flex;gap:22px;flex-wrap:wrap;}
+  .sleeve{
+    position:relative;width:196px;background:none;border:none;padding:0;cursor:pointer;
+    text-align:left;font-family:inherit;transition:transform .25s;
+  }
+  .sleeve .cover{
+    width:150px;height:150px;object-fit:cover;object-position:top left;display:block;
+    border:1px solid var(--line);border-radius:5px;position:relative;z-index:2;
+    background:#0c0c0f;box-shadow:var(--shadow);transition:border-color .2s;
+  }
+  .sleeve::before{ /* the vinyl peeking out of the sleeve */
+    content:"";position:absolute;top:5px;left:20px;width:140px;height:140px;border-radius:50%;
+    background:radial-gradient(circle,
+      var(--rose) 0 11%, #232326 12% 15%, #0a0a0c 16% 42%,
+      #1c1c20 43% 46%, #0a0a0c 47% 74%, #1c1c20 75% 78%, #0a0a0c 79% 100%);
+    z-index:1;transition:left .3s ease;
+  }
+  .sleeve:hover{transform:translateY(-4px);}
+  .sleeve:hover::before{left:38px;}
+  .sleeve:focus-visible{outline:2px solid var(--sage);outline-offset:4px;}
+  .sleeve.active{transform:translateY(-8px);}
+  .sleeve.active::before{left:52px;}
+  .sleeve.active .cover{border-color:var(--sage);}
+  .sleeve .sleeveName{
+    margin-top:10px;font-size:13px;color:var(--ink-soft);letter-spacing:.3px;width:150px;line-height:1.4;
+  }
+  .sleeve.active .sleeveName{color:var(--sage-deep);font-weight:600;}
+
   /* research */
   .researchCard{
     background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--sage);
@@ -229,6 +294,7 @@
       <a href="#about">About</a>
       <a href="#skills">Skills</a>
       <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
       <a href="#research">Research</a>
       <a href="#education">Education</a>
       <a href="#contact">Contact</a>
@@ -374,9 +440,30 @@
     </div>
   </section>
 
+  <section id="projects">
+    <div class="wrap">
+      <h2><span class="num">04</span>Projects</h2>
+      <p class="sectionLede">Pick a record. Every sleeve is a real analysis — results and visuals right on the cover.</p>
+
+      <div class="player reveal">
+        <div class="playerVisual"><img id="npImage" src="assets/projects/payment.webp" alt="Project visualization"></div>
+        <div class="playerInfo">
+          <div class="npLabel">Now playing</div>
+          <h3 id="npTitle"></h3>
+          <p class="npResult" id="npResult"></p>
+          <p class="npDesc" id="npDesc"></p>
+          <div class="chips" id="npChips"></div>
+          <div class="npLinks" id="npLinks"></div>
+        </div>
+      </div>
+
+      <div class="crate reveal" id="crate" role="tablist" aria-label="Project records"></div>
+    </div>
+  </section>
+
   <section id="research">
     <div class="wrap">
-      <h2><span class="num">04</span>Research</h2>
+      <h2><span class="num">05</span>Research</h2>
       <p class="sectionLede">Empirical economics research at Boston University — from global trade microdata to earnings-call text.</p>
       <div class="researchCard reveal">
         <h3>Firm Heterogeneity and Global Supply Chain Behavior in International Trade</h3>
@@ -401,7 +488,7 @@
 
   <section id="education">
     <div class="wrap">
-      <h2><span class="num">05</span>Education</h2>
+      <h2><span class="num">06</span>Education</h2>
       <div class="eduGrid">
         <div class="eduCard reveal">
           <p class="school">Columbia University</p>
@@ -494,6 +581,81 @@
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // projects — record crate
+  const PROJECTS = [
+    {
+      title: 'Payment & Revenue Health',
+      cover: 'assets/projects/payment.webp',
+      result: 'True invoice failure rate is ~10% — not the headline 40% — and ~37% of at-risk revenue is recoverable with smarter dunning.',
+      desc: 'End-to-end analysis of a SaaS business’s Stripe payments: collapsed auto-retries to the invoice level to correct the inflated failure rate, bucketed decline reasons into recoverable vs. hard, and showed annual billing cuts fee leakage from 8.3% to 4.6%.',
+      chips: ['Python · pandas', 'Tableau', 'Payments Data'],
+      links: [
+        { label: '▶ Live Tableau dashboard', url: 'https://public.tableau.com/app/profile/sydney.jiang/viz/PaymentRevenueHealthAnalysis/PaymentRevenueHealth', live: true },
+        { label: 'GitHub', url: 'https://github.com/sydneyjiang000/payment-revenue-analytics' }
+      ]
+    },
+    {
+      title: 'Voice of the User — Survey Dashboard',
+      cover: 'assets/projects/survey.webp',
+      result: '1,840 survey responses turned into an interactive five-section report — 58% top-box promoters; social & video channels bring the most enthusiastic users.',
+      desc: 'Cleans messy survey data (merging inconsistent free-text answers, coding open-ended feature requests into themes) and renders a fully interactive dashboard. Synthetic-data demo of a real analysis built during my internship.',
+      chips: ['JavaScript · Chart.js', 'Python · pandas', 'Survey Analytics'],
+      links: [
+        { label: '▶ Live demo', url: 'https://sydneyjiang00-source.github.io/usersurvey-dashboard-demo/', live: true },
+        { label: 'GitHub', url: 'https://github.com/sydneyjiang000/usersurvey-dashboard-demo' }
+      ]
+    },
+    {
+      title: 'MBTA Bus Ridership, 2016–2024',
+      cover: 'assets/projects/mbta.webp',
+      result: 'COVID cut average loads roughly in half; weekday and weekend service recovered on different paths, and some routes permanently gained share of system ridership.',
+      desc: 'Team analysis of nine years of Boston bus ridership in R: time-series trends, route-level variability, recovery rates against a pre-COVID baseline, and a spatial map of the busiest routes.',
+      chips: ['R · tidyverse', 'Geospatial · sf & tmap', 'Time Series'],
+      links: [
+        { label: 'GitHub & report', url: 'https://github.com/sydneyjiang000/mbta-ridership-analysis' }
+      ]
+    }
+  ];
+
+  const crate = document.getElementById('crate');
+  const npImage = document.getElementById('npImage');
+  const npTitle = document.getElementById('npTitle');
+  const npResult = document.getElementById('npResult');
+  const npDesc = document.getElementById('npDesc');
+  const npChips = document.getElementById('npChips');
+  const npLinks = document.getElementById('npLinks');
+
+  PROJECTS.forEach((pr, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'sleeve';
+    btn.setAttribute('role', 'tab');
+    btn.innerHTML = `<img class="cover" src="${pr.cover}" alt="${pr.title} cover"><div class="sleeveName">${pr.title}</div>`;
+    btn.addEventListener('click', () => playRecord(i));
+    crate.appendChild(btn);
+    const pre = new Image(); pre.src = pr.cover;
+  });
+
+  function playRecord(i) {
+    const pr = PROJECTS[i];
+    [...crate.children].forEach((el, j) => {
+      el.classList.toggle('active', j === i);
+      el.setAttribute('aria-selected', j === i);
+    });
+    npImage.style.opacity = 0;
+    setTimeout(() => {
+      npImage.src = pr.cover;
+      npImage.alt = pr.title + ' visualization';
+      npImage.style.opacity = 1;
+    }, 220);
+    npTitle.textContent = pr.title;
+    npResult.textContent = pr.result;
+    npDesc.textContent = pr.desc;
+    npChips.innerHTML = pr.chips.map(c => `<span class="chip">${c}</span>`).join('');
+    npLinks.innerHTML = pr.links.map(l =>
+      `<a href="${l.url}" target="_blank" rel="noopener"${l.live ? ' class="live"' : ''}>${l.label}</a>`).join('');
+  }
+  playRecord(0);
 
   // nav active state
   const links = [...document.querySelectorAll('.navLinks a')];
