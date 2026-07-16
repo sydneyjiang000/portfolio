@@ -7,23 +7,6 @@
 <meta name="description" content="Sydney (Xin Ni) Jiang — problem-solver at the intersection of business, technology, and AI. From banking to investment research to an AI startup. Columbia MSBA, Boston University Economics.">
 <style>
   :root{
-    --bg:#faf7f1;
-    --bg-soft:#f3eee4;
-    --panel:#ffffff;
-    --ink:#2a2723;
-    --ink-soft:#6f6a61;
-    --ink-faint:#a09a8e;
-    --sage:#6f8264;
-    --sage-deep:#55654c;
-    --sage-tint:#eef1e9;
-    --rose:#b06a72;
-    --rose-tint:#f7ecec;
-    --line:#e6dfd2;
-    --shadow:0 1px 2px rgba(42,39,35,.04), 0 12px 32px -16px rgba(42,39,35,.14);
-    --serif:"Palatino Linotype","Book Antiqua",Palatino,"Songti SC",Georgia,serif;
-    --sans:"Avenir Next","Segoe UI","Helvetica Neue",Arial,"PingFang SC",sans-serif;
-  }
-  html[data-theme="dark"]{
     --bg:#17171a;
     --bg-soft:#1e1e22;
     --panel:#212126;
@@ -37,9 +20,11 @@
     --rose-tint:#2b2225;
     --line:#323238;
     --shadow:0 1px 2px rgba(0,0,0,.25), 0 12px 32px -16px rgba(0,0,0,.5);
+    --serif:"Palatino Linotype","Book Antiqua",Palatino,"Songti SC",Georgia,serif;
+    --sans:"Avenir Next","Segoe UI","Helvetica Neue",Arial,"PingFang SC",sans-serif;
   }
   *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
+  html{scroll-behavior:smooth;color-scheme:dark;}
   body{
     margin:0;background:var(--bg);color:var(--ink);
     font-family:var(--sans);font-size:16px;line-height:1.65;
@@ -55,8 +40,7 @@
   /* ---------- scroll-scrubbed water backdrop ---------- */
   #videoBackdrop{position:fixed;inset:0;z-index:-1;pointer-events:none;}
   #videoBackdrop canvas{width:100%;height:100%;display:block;}
-  .vbOverlay{position:absolute;inset:0;background:color-mix(in srgb, var(--bg) 80%, transparent);}
-  html[data-theme="dark"] .vbOverlay{background:color-mix(in srgb, var(--bg) 62%, transparent);}
+  .vbOverlay{position:absolute;inset:0;background:color-mix(in srgb, var(--bg) 62%, transparent);}
 
   /* ---------- nav ---------- */
   nav{
@@ -75,12 +59,6 @@
   .navLinks a{color:var(--ink-soft);}
   .navLinks a:hover{color:var(--ink);text-decoration:none;}
   .navLinks a.active{color:var(--sage-deep);font-weight:600;}
-  #themeBtn{
-    border:1px solid var(--line);background:transparent;color:var(--ink-soft);
-    width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;line-height:1;
-    transition:all .2s;
-  }
-  #themeBtn:hover{border-color:var(--sage);color:var(--sage-deep);}
   @media(max-width:720px){ .navLinks{display:none;} }
 
   /* ---------- hero ---------- */
@@ -188,6 +166,7 @@
     background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--sage);
     border-radius:12px;padding:26px 28px;box-shadow:var(--shadow);
   }
+  .researchCard + .researchCard{margin-top:20px;}
   .researchCard h3{font-family:var(--serif);font-size:20px;margin:0 0 4px;font-style:italic;font-weight:600;}
   .researchCard .jobMeta{margin-bottom:12px;}
   .researchCard p{margin:0 0 12px;color:var(--ink-soft);font-size:15px;}
@@ -254,7 +233,6 @@
       <a href="#education">Education</a>
       <a href="#contact">Contact</a>
     </div>
-    <button id="themeBtn" title="Toggle theme" aria-label="Toggle color theme">◐</button>
   </div>
 </nav>
 
@@ -399,7 +377,16 @@
   <section id="research">
     <div class="wrap">
       <h2><span class="num">04</span>Research</h2>
-      <p class="sectionLede">Empirical industrial organization — where economics meets text data.</p>
+      <p class="sectionLede">Empirical economics research at Boston University — from global trade microdata to earnings-call text.</p>
+      <div class="researchCard reveal">
+        <h3>Firm Heterogeneity and Global Supply Chain Behavior in International Trade</h3>
+        <div class="jobMeta">Research Assistant · Boston University · Mar 2025 – Sep 2025</div>
+        <p>Processed and standardized firm-level import and export transaction data across <b>multiple countries and years</b>, resolving inconsistencies in product codes, firm identifiers, and shipment classifications to prepare the dataset for empirical analysis.</p>
+        <p>Developed rule-based criteria to classify trade activities by firm type and transaction nature (e.g., <b>intermediated vs. direct trade</b>), enabling structured investigation into firm heterogeneity and global supply chain behavior; validated and documented data-cleaning decisions with the research team to build a clean, reliable <b>panel dataset</b> for studying international trade dynamics.</p>
+        <div class="chips">
+          <span class="chip">International Trade</span><span class="chip">Data Cleaning</span><span class="chip">Panel Data</span>
+        </div>
+      </div>
       <div class="researchCard reveal">
         <h3>Collusion in Plain Sight: Firms' Use of Public Announcements to Restrain Competition</h3>
         <div class="jobMeta">Research Assistant · Supervisor: Prof. Juan Ortner, Boston University · Mar 2025 – Jul 2025</div>
@@ -451,17 +438,6 @@
 </footer>
 
 <script>
-  // theme toggle — follows system preference, remembers manual choice
-  const root = document.documentElement;
-  const saved = localStorage.getItem('theme');
-  if (saved) root.dataset.theme = saved;
-  else if (matchMedia('(prefers-color-scheme: dark)').matches) root.dataset.theme = 'dark';
-  document.getElementById('themeBtn').addEventListener('click', () => {
-    const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-    root.dataset.theme = next;
-    localStorage.setItem('theme', next);
-  });
-
   // scroll-scrubbed water backdrop: scroll sets a target frame, and a rAF
   // loop eases the current frame toward it so fast scrolls play through
   // the intermediate frames instead of jumping
