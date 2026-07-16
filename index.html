@@ -54,9 +54,9 @@
 
   /* ---------- scroll-scrubbed water backdrop ---------- */
   #videoBackdrop{position:fixed;inset:0;z-index:-1;pointer-events:none;}
-  #videoBackdrop img{width:100%;height:100%;object-fit:cover;display:block;}
-  .vbOverlay{position:absolute;inset:0;background:color-mix(in srgb, var(--bg) 88%, transparent);}
-  html[data-theme="dark"] .vbOverlay{background:color-mix(in srgb, var(--bg) 76%, transparent);}
+  #videoBackdrop canvas{width:100%;height:100%;display:block;}
+  .vbOverlay{position:absolute;inset:0;background:color-mix(in srgb, var(--bg) 80%, transparent);}
+  html[data-theme="dark"] .vbOverlay{background:color-mix(in srgb, var(--bg) 62%, transparent);}
 
   /* ---------- nav ---------- */
   nav{
@@ -248,7 +248,7 @@
 <body>
 
 <div id="videoBackdrop" aria-hidden="true">
-  <img id="vbFrame" src="assets/bg/f001.webp" alt="">
+  <canvas id="vbCanvas"></canvas>
   <div class="vbOverlay"></div>
 </div>
 
@@ -483,23 +483,55 @@
     localStorage.setItem('theme', next);
   });
 
-  // scroll-scrubbed water backdrop: scroll position picks the video frame
-  const vbFrame = document.getElementById('vbFrame');
-  const VB_COUNT = 121;
+  // scroll-scrubbed water backdrop: scroll sets a target frame, and a rAF
+  // loop eases the current frame toward it so fast scrolls play through
+  // the intermediate frames instead of jumping
+  const vbCanvas = document.getElementById('vbCanvas');
+  const vbCtx = vbCanvas.getContext('2d');
+  const VB_COUNT = 241;
   const vbSrc = i => `assets/bg/f${String(i + 1).padStart(3, '0')}.webp`;
   const vbImgs = [];
-  addEventListener('load', () => {
-    for (let i = 0; i < VB_COUNT; i++) { const im = new Image(); im.src = vbSrc(i); vbImgs.push(im); }
-  });
-  let vbTick = false;
-  function vbUpdate() {
-    const max = document.documentElement.scrollHeight - innerHeight;
-    const idx = Math.min(VB_COUNT - 1, Math.max(0, Math.round((max > 0 ? scrollY / max : 0) * (VB_COUNT - 1))));
-    if (!vbImgs[idx] || vbImgs[idx].complete) vbFrame.src = vbSrc(idx);
-    vbTick = false;
+  let vbCur = 0, vbTarget = 0, vbRunning = false, vbLast = -1;
+
+  function vbDraw(idx, force) {
+    if (idx === vbLast && !force) return;
+    const im = vbImgs[idx];
+    if (!im || !im.complete || !im.naturalWidth) return;
+    const cw = vbCanvas.width, ch = vbCanvas.height;
+    const s = Math.max(cw / im.naturalWidth, ch / im.naturalHeight);
+    const dw = im.naturalWidth * s, dh = im.naturalHeight * s;
+    vbCtx.drawImage(im, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
+    vbLast = idx;
   }
+  function vbResize() {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    vbCanvas.width = innerWidth * dpr;
+    vbCanvas.height = innerHeight * dpr;
+    vbDraw(Math.round(vbCur), true);
+  }
+  function vbLoop() {
+    const diff = vbTarget - vbCur;
+    vbCur = Math.abs(diff) < 0.5 ? vbTarget : vbCur + diff * 0.16;
+    vbDraw(Math.round(vbCur));
+    if (vbCur !== vbTarget) requestAnimationFrame(vbLoop); else vbRunning = false;
+  }
+  function vbOnScroll() {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    vbTarget = Math.min(VB_COUNT - 1, Math.max(0, (max > 0 ? scrollY / max : 0) * (VB_COUNT - 1)));
+    if (!vbRunning) { vbRunning = true; requestAnimationFrame(vbLoop); }
+  }
+  vbResize();
+  {
+    const first = new Image();
+    first.src = vbSrc(0);
+    first.onload = () => { vbImgs[0] = first; vbDraw(0, true); };
+  }
+  addEventListener('load', () => {
+    for (let i = 1; i < VB_COUNT; i++) { const im = new Image(); im.src = vbSrc(i); vbImgs[i] = im; }
+  });
+  addEventListener('resize', vbResize);
   if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    addEventListener('scroll', () => { if (!vbTick) { vbTick = true; requestAnimationFrame(vbUpdate); } }, { passive: true });
+    addEventListener('scroll', vbOnScroll, { passive: true });
   }
 
   // scroll-reveal
