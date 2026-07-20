@@ -3,27 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sydney Jiang · Business & Data Analytics</title>
-<meta name="description" content="Sydney (Xin Ni) Jiang — business & data analytics portfolio. Columbia MSBA, Boston University Economics. Machine learning, A/B testing, and credit risk modeling.">
+<title>Sydney Jiang · Business × Tech × AI</title>
+<meta name="description" content="Sydney (Xin Ni) Jiang — problem-solver at the intersection of business, technology, and AI. From banking to investment research to an AI startup. Columbia MSBA, Boston University Economics.">
 <style>
   :root{
-    --bg:#faf7f1;
-    --bg-soft:#f3eee4;
-    --panel:#ffffff;
-    --ink:#2a2723;
-    --ink-soft:#6f6a61;
-    --ink-faint:#a09a8e;
-    --sage:#6f8264;
-    --sage-deep:#55654c;
-    --sage-tint:#eef1e9;
-    --rose:#b06a72;
-    --rose-tint:#f7ecec;
-    --line:#e6dfd2;
-    --shadow:0 1px 2px rgba(42,39,35,.04), 0 12px 32px -16px rgba(42,39,35,.14);
-    --serif:"Palatino Linotype","Book Antiqua",Palatino,"Songti SC",Georgia,serif;
-    --sans:"Avenir Next","Segoe UI","Helvetica Neue",Arial,"PingFang SC",sans-serif;
-  }
-  html[data-theme="dark"]{
     --bg:#17171a;
     --bg-soft:#1e1e22;
     --panel:#212126;
@@ -37,9 +20,11 @@
     --rose-tint:#2b2225;
     --line:#323238;
     --shadow:0 1px 2px rgba(0,0,0,.25), 0 12px 32px -16px rgba(0,0,0,.5);
+    --serif:"Palatino Linotype","Book Antiqua",Palatino,"Songti SC",Georgia,serif;
+    --sans:"Avenir Next","Segoe UI","Helvetica Neue",Arial,"PingFang SC",sans-serif;
   }
   *{box-sizing:border-box;}
-  html{scroll-behavior:smooth;}
+  html{scroll-behavior:smooth;color-scheme:dark;}
   body{
     margin:0;background:var(--bg);color:var(--ink);
     font-family:var(--sans);font-size:16px;line-height:1.65;
@@ -51,6 +36,11 @@
   a:hover{text-decoration:underline;text-underline-offset:3px;}
 
   .wrap{max-width:960px;margin:0 auto;padding:0 24px;}
+
+  /* ---------- scroll-scrubbed water backdrop ---------- */
+  #videoBackdrop{position:fixed;inset:0;z-index:-1;pointer-events:none;}
+  #videoBackdrop canvas{width:100%;height:100%;display:block;}
+  .vbOverlay{position:absolute;inset:0;background:color-mix(in srgb, var(--bg) 62%, transparent);}
 
   /* ---------- nav ---------- */
   nav{
@@ -69,12 +59,6 @@
   .navLinks a{color:var(--ink-soft);}
   .navLinks a:hover{color:var(--ink);text-decoration:none;}
   .navLinks a.active{color:var(--sage-deep);font-weight:600;}
-  #themeBtn{
-    border:1px solid var(--line);background:transparent;color:var(--ink-soft);
-    width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:15px;line-height:1;
-    transition:all .2s;
-  }
-  #themeBtn:hover{border-color:var(--sage);color:var(--sage-deep);}
   @media(max-width:720px){ .navLinks{display:none;} }
 
   /* ---------- hero ---------- */
@@ -97,7 +81,13 @@
   .heroMeta a{display:inline-flex;align-items:center;gap:7px;color:var(--ink-soft);}
   .heroMeta a:hover{color:var(--sage-deep);text-decoration:none;}
   .heroMeta svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;flex:0 0 auto;}
-  .heroBtns{margin-top:30px;display:flex;gap:12px;flex-wrap:wrap;}
+  .authBadge{
+    display:inline-flex;align-items:center;gap:9px;margin-top:18px;
+    padding:9px 16px;border-radius:22px;font-size:13.5px;letter-spacing:.2px;
+    background:var(--sage-tint);color:var(--sage-deep);border:1px solid var(--sage);
+  }
+  .authBadge::before{content:"✓";font-weight:700;}
+  .heroBtns{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap;}
   .btn{
     display:inline-block;padding:11px 24px;border-radius:26px;font-size:14px;letter-spacing:.4px;
     border:1px solid var(--sage-deep);transition:all .2s;
@@ -107,14 +97,55 @@
   .btn.ghost{color:var(--sage-deep);}
   .btn.ghost:hover{background:var(--sage-tint);text-decoration:none;}
 
-  /* botanical accent */
-  .heroArt{
-    position:absolute;right:-40px;top:30px;width:300px;opacity:.5;pointer-events:none;
+  /* lanyard badge — physics-hung ID card carrying the quick facts */
+  /* strap anchor lines up with the "Contact" nav item (170px from this
+     container's right edge; Contact sits ~429px right of page center) */
+  #lanyard{position:absolute;top:0;right:calc(50% - 599px);width:380px;height:660px;z-index:6;pointer-events:none;}
+  #lanyardSvg{position:absolute;inset:0;overflow:visible;}
+  #badge{
+    position:absolute;left:0;top:0;width:264px;pointer-events:auto;cursor:grab;
+    user-select:none;-webkit-user-select:none;touch-action:none;will-change:transform;
+    transform-origin:50% -6px;
   }
-  .heroArt svg{width:100%;height:auto;}
-  .heroArt path,.heroArt circle{stroke:var(--sage);fill:none;stroke-width:1.1;}
-  .heroArt circle.bud{fill:var(--rose);stroke:none;opacity:.55;}
-  @media(max-width:860px){ .heroArt{display:none;} }
+  #badge.grabbing{cursor:grabbing;}
+  .badgeClasp{
+    width:58px;height:16px;margin:0 auto;border-radius:4px 4px 8px 8px;
+    background:linear-gradient(180deg,#8f8f96,#5c5c63 60%,#3f3f45);
+    box-shadow:0 2px 4px rgba(0,0,0,.5);
+  }
+  .badgeCard{
+    position:relative;margin-top:6px;border-radius:16px;padding:16px 20px 14px;
+    background:linear-gradient(150deg, rgba(255,255,255,.13), rgba(255,255,255,.045) 55%, rgba(255,255,255,.09));
+    -webkit-backdrop-filter:blur(16px) saturate(1.25);backdrop-filter:blur(16px) saturate(1.25);
+    border:1px solid rgba(255,255,255,.22);
+    box-shadow:0 30px 50px -22px rgba(0,0,0,.65),
+      inset 0 1px 0 rgba(255,255,255,.30), inset 0 -1px 0 rgba(255,255,255,.08);
+  }
+  .badgeCard::after{ /* glass glare */
+    content:"";position:absolute;inset:0;border-radius:16px;pointer-events:none;
+    background:linear-gradient(115deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.05) 26%, transparent 42%, transparent 72%, rgba(255,255,255,.07) 100%);
+  }
+  .badgeHole{
+    width:46px;height:9px;border-radius:5px;background:rgba(8,8,12,.6);margin:0 auto 12px;
+    border:1px solid rgba(255,255,255,.22);
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.85);
+  }
+  .badgeName{
+    font-family:var(--serif);font-size:19px;font-weight:700;letter-spacing:1px;text-align:center;
+    color:var(--ink);display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .badgeName .dot{width:7px;height:7px;border-radius:50%;background:var(--sage);}
+  .badgeRole{font-size:10.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--sage-deep);text-align:center;margin:3px 0 12px;}
+  .badgeRows{list-style:none;margin:0;padding:0;font-size:12.5px;border-top:1px solid rgba(255,255,255,.18);}
+  .badgeRows li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed rgba(255,255,255,.14);}
+  .badgeRows li span:first-child{color:rgba(232,228,221,.55);white-space:nowrap;}
+  .badgeRows li span:last-child{text-align:right;font-weight:600;color:#f4f1ea;}
+  .badgeBar{
+    margin-top:12px;height:26px;border-radius:6px;opacity:.55;
+    background:repeating-linear-gradient(90deg,#d8d4cc 0 2px,transparent 2px 5px,#d8d4cc 5px 6px,transparent 6px 11px,#d8d4cc 11px 14px,transparent 14px 17px);
+  }
+  @media(max-width:1100px){ #lanyard{display:none;} }
+  @media(prefers-reduced-motion:reduce){ #lanyard{display:none;} }
 
   /* stat strip */
   .stats{
@@ -131,7 +162,10 @@
 
   /* ---------- sections ---------- */
   section{padding:64px 0;}
-  section + section{border-top:1px solid var(--line);}
+  section + section, #aboutStage + section{border-top:1px solid var(--line);}
+  /* about pins mid-screen while its text inks in, then releases */
+  #aboutStage{position:relative;}
+  #aboutStage.pinned #about{position:sticky;}
   h2{
     font-family:var(--serif);font-size:clamp(26px,3.6vw,32px);font-weight:700;margin:0 0 6px;
     display:flex;align-items:baseline;gap:14px;
@@ -139,9 +173,19 @@
   h2 .num{font-size:14px;color:var(--ink-faint);font-family:var(--sans);letter-spacing:2px;font-weight:400;}
   .sectionLede{color:var(--ink-soft);margin:0 0 36px;max-width:640px;}
 
-  /* about */
-  .aboutGrid{display:grid;grid-template-columns:1.6fr 1fr;gap:36px;align-items:start;}
+  /* about — giant particle ABOUT on the left, copy on the right */
+  .aboutGrid{display:grid;grid-template-columns:1.2fr 1fr;gap:56px;align-items:center;}
+  /* bleed the wordmark into the page's left margin for extra size */
+  .aboutArt{position:relative;margin-left:clamp(-150px, calc((912px - 100vw) / 2 * .62), 0px);}
+  #aboutCanvas{display:block;width:100%;cursor:default;}
+  .srOnly{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+  @media(max-width:900px){ .aboutGrid{grid-template-columns:1fr;gap:20px;} }
   .aboutGrid p{margin:0 0 16px;color:var(--ink);}
+  .mobileFacts{display:none;margin-top:28px;}
+  @media(max-width:1100px){ .mobileFacts{display:block;} }
+  /* scroll-driven text reveal: words go dim -> bold white as you scroll */
+  .aboutText p{font-size:17.5px;line-height:1.75;color:#fff;}
+  .aboutText .rw{opacity:.24;}
   .factCard{
     background:var(--panel);border:1px solid var(--line);border-radius:14px;
     padding:22px 24px;box-shadow:var(--shadow);
@@ -153,6 +197,16 @@
   .factCard li span:first-child{color:var(--ink-soft);}
   .factCard li span:last-child{text-align:right;font-weight:600;}
   @media(max-width:720px){ .aboutGrid{grid-template-columns:1fr;} }
+
+  /* skills — chips left, particle SKILLS right */
+  .skillsGrid{display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:center;}
+  /* mirror bleed: SKILLS pushes into the right page margin */
+  .skillsArt{position:relative;margin-right:clamp(-150px, calc((912px - 100vw) / 2 * .62), 0px);}
+  #skillsCanvas{display:block;width:100%;}
+  @media(max-width:900px){
+    .skillsGrid{grid-template-columns:1fr;gap:24px;}
+    .skillsArt{order:-1;}
+  }
 
   /* experience timeline */
   .timeline{position:relative;padding-left:28px;}
@@ -180,11 +234,77 @@
   }
   .chip.metric{background:var(--rose-tint);color:var(--rose);}
 
+  /* projects — record crate */
+  .player{
+    display:grid;grid-template-columns:1.4fr 1fr;gap:0;
+    background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    box-shadow:var(--shadow);overflow:hidden;margin-bottom:36px;
+  }
+  .playerVisual{
+    background:#0c0c0f;display:flex;align-items:center;justify-content:center;
+    min-height:300px;border-right:1px solid var(--line);
+  }
+  .playerVisual img{width:100%;height:100%;max-height:460px;object-fit:contain;transition:opacity .3s;}
+  .playerInfo{padding:26px 28px;display:flex;flex-direction:column;gap:12px;align-items:flex-start;}
+  .npLabel{
+    font-size:11px;letter-spacing:3px;color:var(--rose);text-transform:uppercase;
+    display:flex;align-items:center;gap:9px;
+  }
+  .npLabel::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--rose);animation:npPulse 1.6s ease-in-out infinite;}
+  @keyframes npPulse{0%,100%{opacity:1;}50%{opacity:.3;}}
+  .playerInfo h3{font-family:var(--serif);font-size:22px;margin:0;font-weight:700;}
+  .npResult{
+    margin:0;font-size:14.5px;color:var(--sage-deep);
+    border-left:3px solid var(--sage);padding-left:12px;
+  }
+  .npDesc{margin:0;font-size:14.5px;color:var(--ink-soft);}
+  .npLinks{display:flex;gap:10px;flex-wrap:wrap;margin-top:auto;padding-top:6px;}
+  .npLinks a{
+    display:inline-block;padding:8px 18px;border-radius:20px;font-size:13px;letter-spacing:.3px;
+    border:1px solid var(--sage-deep);color:var(--sage-deep);
+  }
+  .npLinks a:hover{background:var(--sage-tint);text-decoration:none;}
+  .npLinks a.live{background:var(--sage-deep);color:var(--bg);}
+  .npLinks a.live:hover{background:var(--sage);}
+  @media(max-width:820px){
+    .player{grid-template-columns:1fr;}
+    .playerVisual{border-right:none;border-bottom:1px solid var(--line);min-height:200px;}
+  }
+
+  .crate{display:flex;gap:22px;flex-wrap:wrap;}
+  .sleeve{
+    position:relative;width:196px;background:none;border:none;padding:0;cursor:pointer;
+    text-align:left;font-family:inherit;transition:transform .25s;
+  }
+  .sleeve .cover{
+    width:150px;height:150px;object-fit:cover;object-position:top left;display:block;
+    border:1px solid var(--line);border-radius:5px;position:relative;z-index:2;
+    background:#0c0c0f;box-shadow:var(--shadow);transition:border-color .2s;
+  }
+  .sleeve::before{ /* the vinyl peeking out of the sleeve */
+    content:"";position:absolute;top:5px;left:20px;width:140px;height:140px;border-radius:50%;
+    background:radial-gradient(circle,
+      var(--rose) 0 11%, #232326 12% 15%, #0a0a0c 16% 42%,
+      #1c1c20 43% 46%, #0a0a0c 47% 74%, #1c1c20 75% 78%, #0a0a0c 79% 100%);
+    z-index:1;transition:left .3s ease;
+  }
+  .sleeve:hover{transform:translateY(-4px);}
+  .sleeve:hover::before{left:38px;}
+  .sleeve:focus-visible{outline:2px solid var(--sage);outline-offset:4px;}
+  .sleeve.active{transform:translateY(-8px);}
+  .sleeve.active::before{left:52px;}
+  .sleeve.active .cover{border-color:var(--sage);}
+  .sleeve .sleeveName{
+    margin-top:10px;font-size:13px;color:var(--ink-soft);letter-spacing:.3px;width:150px;line-height:1.4;
+  }
+  .sleeve.active .sleeveName{color:var(--sage-deep);font-weight:600;}
+
   /* research */
   .researchCard{
     background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--sage);
     border-radius:12px;padding:26px 28px;box-shadow:var(--shadow);
   }
+  .researchCard + .researchCard{margin-top:20px;}
   .researchCard h3{font-family:var(--serif);font-size:20px;margin:0 0 4px;font-style:italic;font-weight:600;}
   .researchCard .jobMeta{margin-bottom:12px;}
   .researchCard p{margin:0 0 12px;color:var(--ink-soft);font-size:15px;}
@@ -235,44 +355,61 @@
 </head>
 <body>
 
+<div id="videoBackdrop" aria-hidden="true">
+  <canvas id="vbCanvas"></canvas>
+  <div class="vbOverlay"></div>
+</div>
+
 <nav>
   <div class="wrap navRow">
     <div class="monogram"><span class="dot"></span>Sydney Jiang</div>
     <div class="navLinks">
       <a href="#about">About</a>
+      <a href="#skills">Skills</a>
       <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
       <a href="#research">Research</a>
       <a href="#education">Education</a>
-      <a href="#skills">Skills</a>
       <a href="#contact">Contact</a>
     </div>
-    <button id="themeBtn" title="Toggle theme" aria-label="Toggle color theme">◐</button>
   </div>
 </nav>
 
 <header class="hero">
-  <div class="heroArt" aria-hidden="true">
-    <svg viewBox="0 0 300 320">
-      <path d="M150 310 C150 240 150 180 150 120"/>
-      <path d="M150 200 C120 180 95 175 70 180 C95 155 125 160 150 185"/>
-      <path d="M150 160 C180 140 205 135 232 142 C208 115 176 122 150 148"/>
-      <path d="M150 120 C140 90 142 62 158 40"/>
-      <circle class="bud" cx="160" cy="36" r="9"/>
-      <circle class="bud" cx="70" cy="178" r="5"/>
-      <circle class="bud" cx="233" cy="141" r="5"/>
-      <path d="M150 250 C128 238 108 238 90 246"/>
+  <div id="lanyard" aria-hidden="true">
+    <svg id="lanyardSvg">
+      <path id="strapPath" fill="none" stroke="#4a5544" stroke-width="17" stroke-linecap="round"></path>
+      <path id="strapStitch" fill="none" stroke="#7d8a72" stroke-width="2" stroke-dasharray="7 6" stroke-linecap="round"></path>
     </svg>
+    <div id="badge">
+      <div class="badgeClasp"></div>
+      <div class="badgeCard">
+        <div class="badgeHole"></div>
+        <div class="badgeName"><span class="dot"></span>SYDNEY JIANG</div>
+        <div class="badgeRole">Quick Facts</div>
+        <ul class="badgeRows">
+          <li><span>Based in</span><span>New York, NY</span></li>
+          <li><span>Next up</span><span>Columbia MSBA '28</span></li>
+          <li><span>Focus</span><span>Quant Research ·<br>Risk · Applied AI</span></li>
+          <li><span>Credentials</span><span>CFA Level I Candidate</span></li>
+          <li><span>Languages</span><span>English · Mandarin</span></li>
+          <li><span>Work auth</span><span>No H-1B needed<br>(STEM OPT '31)</span></li>
+        </ul>
+        <div class="badgeBar"></div>
+      </div>
+    </div>
   </div>
   <div class="wrap">
-    <div class="eyebrow">Business &amp; Data Analytics</div>
+    <div class="eyebrow">Business × Tech × AI</div>
     <h1>Xin&nbsp;Ni (Sydney) Jiang</h1>
-    <p class="heroTag">I turn messy data into decisions — <em>segmentation, churn and credit-risk models</em> that moved real business metrics across marketing, securities, and banking.</p>
+    <p class="heroTag">Problem-solver at the intersection of <em>business, technology, and AI</em> — with a journey from banking to investment research to an AI startup.</p>
     <div class="heroMeta">
       <a href="#contact"><svg viewBox="0 0 24 24"><path d="M12 21c-4-4.5-7-8-7-11.5A7 7 0 0 1 19 9.5C19 13 16 16.5 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>New York, NY</a>
       <a href="mailto:sydneyjiang00@gmail.com"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>sydneyjiang00@gmail.com</a>
-      <a href="https://www.linkedin.com/in/xin-ni-jiang-4a4721296/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2.5 2.5 0 0 1 5 0v4"/></svg>LinkedIn</a>
+      <a href="https://www.linkedin.com/in/sydney-jiang-4a4721296/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2.5 2.5 0 0 1 5 0v4"/></svg>LinkedIn</a>
       <a href="https://github.com/sydneyjiang000" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-2.85 17.54c.45.08.62-.2.62-.44v-1.54c-2.5.54-3.03-1.2-3.03-1.2-.41-1.04-1-1.32-1-1.32-.82-.56.06-.55.06-.55.9.06 1.38.93 1.38.93.8 1.38 2.11.98 2.63.75.08-.58.31-.98.57-1.2-2-.23-4.1-1-4.1-4.45 0-.98.35-1.78.93-2.41-.1-.23-.4-1.15.08-2.4 0 0 .76-.24 2.48.92a8.6 8.6 0 0 1 4.5 0c1.72-1.16 2.47-.92 2.47-.92.5 1.25.19 2.17.1 2.4.58.63.92 1.43.92 2.41 0 3.47-2.1 4.22-4.11 4.44.32.28.61.83.61 1.67v2.47c0 .24.16.53.63.44A9 9 0 0 0 12 3z"/></svg>GitHub</a>
     </div>
+    <div class="authBadge">No H-1B sponsorship required — STEM OPT through 2031, E-3 visa eligibility thereafter</div>
     <div class="heroBtns">
       <a class="btn primary" href="mailto:sydneyjiang00@gmail.com">Get in touch</a>
       <a class="btn ghost" href="#experience">See my work ↓</a>
@@ -288,21 +425,25 @@
 </header>
 
 <main>
+  <div id="aboutStage">
   <section id="about">
     <div class="wrap">
-      <h2><span class="num">01</span>About</h2>
       <div class="aboutGrid reveal">
-        <div>
-          <p>I'm an analyst who likes the whole journey of a question — from a vague "why is retention slipping?" to a model, an experiment, and a recommendation someone actually acts on.</p>
-          <p>Across internships at <b>ARISO</b>, <b>CITIC Securities</b>, and <b>China Construction Bank</b>, I've built customer segmentation and churn models, designed A/B tests, ranked bond issuers by credit quality, and predicted loan defaults at 30-million-record scale. Alongside industry work, I've done empirical economics research on tacit collusion with Prof. Juan Ortner at Boston University.</p>
-          <p>I'm currently finishing my BA in Economics (Statistics minor) at Boston University, and will begin the <b>MS in Business Analytics at Columbia University</b> in Fall 2026.</p>
+        <div class="aboutArt">
+          <h2 class="srOnly">About</h2>
+          <canvas id="aboutCanvas" aria-hidden="true"></canvas>
         </div>
-        <div class="factCard">
+        <div class="aboutText">
+          <p>I move fast, stay curious, and follow through — traits forged on the fast-paced trading floors and sharpened within an AI startup. That mix gave me classic business analytics fundamentals, a practical read on where AI is headed, and the instinct to put it to work without cutting corners.</p>
+          <p>Outside of work I keep building — academic models you can explore, tools that solve real problems. The AI world moves fast enough that there's no fixed playbook, so I learn as I go and use AI itself to go after problems nobody's solved yet.</p>
+        </div>
+        <div class="factCard mobileFacts">
           <h3>Quick facts</h3>
           <ul>
             <li><span>Based in</span><span>New York, NY</span></li>
             <li><span>Next up</span><span>Columbia MSBA '28</span></li>
-            <li><span>Focus</span><span>ML · A/B testing · Risk</span></li>
+            <li><span>Focus</span><span>Quantitative Research · Risk Analytics · Applied AI</span></li>
+            <li><span>Credentials</span><span>CFA Level I Candidate</span></li>
             <li><span>Languages</span><span>English · Mandarin</span></li>
             <li><span>Work auth</span><span>No H-1B sponsorship needed<br>(STEM OPT through 2031)</span></li>
           </ul>
@@ -310,10 +451,51 @@
       </div>
     </div>
   </section>
+  </div>
+
+  <section id="skills">
+    <div class="wrap">
+      <div class="skillsGrid reveal">
+        <div>
+        <div class="skillGroup">
+          <h3>Programming</h3>
+          <div class="chips">
+            <span class="chip">Python (pandas · scikit-learn · NumPy)</span><span class="chip">SQL</span><span class="chip">R</span><span class="chip">Stata</span>
+          </div>
+        </div>
+        <div class="skillGroup">
+          <h3>Tools &amp; Visualization</h3>
+          <div class="chips">
+            <span class="chip">Tableau</span><span class="chip">Power BI</span><span class="chip">Advanced Excel (VBA · Pivot Tables)</span>
+          </div>
+        </div>
+        <div class="skillGroup">
+          <h3>Analytics &amp; Modeling</h3>
+          <div class="chips">
+            <span class="chip">Statistical Modeling</span><span class="chip">Machine Learning</span><span class="chip">A/B Testing</span>
+            <span class="chip">NLP / Text Analysis</span><span class="chip">Causal Inference</span><span class="chip">Cohort &amp; Funnel Analysis</span>
+            <span class="chip">Time-Series Analysis</span><span class="chip">Business Intelligence</span>
+          </div>
+        </div>
+        <div class="skillGroup">
+          <h3>Languages</h3>
+          <div class="chips">
+            <span class="chip">Mandarin (native)</span><span class="chip">English (fluent)</span>
+          </div>
+        </div>
+        </div>
+        <div class="skillsArt">
+          <h2 class="srOnly">Skills</h2>
+          <canvas id="skillsCanvas" aria-hidden="true"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
 
   <section id="experience">
     <div class="wrap">
-      <h2><span class="num">02</span>Experience</h2>
+      <h2><span class="num">03</span>Experience</h2>
       <p class="sectionLede">Three industries, one thread: quantitative models that changed how a team made decisions.</p>
       <div class="timeline">
 
@@ -364,10 +546,40 @@
     </div>
   </section>
 
+  <section id="projects">
+    <div class="wrap">
+      <h2><span class="num">04</span>Projects</h2>
+      <p class="sectionLede">Pick a record. Every sleeve is a real analysis — results and visuals right on the cover.</p>
+
+      <div class="player reveal">
+        <div class="playerVisual"><img id="npImage" src="assets/projects/payment.webp" alt="Project visualization"></div>
+        <div class="playerInfo">
+          <div class="npLabel">Now playing</div>
+          <h3 id="npTitle"></h3>
+          <p class="npResult" id="npResult"></p>
+          <p class="npDesc" id="npDesc"></p>
+          <div class="chips" id="npChips"></div>
+          <div class="npLinks" id="npLinks"></div>
+        </div>
+      </div>
+
+      <div class="crate reveal" id="crate" role="tablist" aria-label="Project records"></div>
+    </div>
+  </section>
+
   <section id="research">
     <div class="wrap">
-      <h2><span class="num">03</span>Research</h2>
-      <p class="sectionLede">Empirical industrial organization — where economics meets text data.</p>
+      <h2><span class="num">05</span>Research</h2>
+      <p class="sectionLede">Empirical economics research at Boston University — from global trade microdata to earnings-call text.</p>
+      <div class="researchCard reveal">
+        <h3>Firm Heterogeneity and Global Supply Chain Behavior in International Trade</h3>
+        <div class="jobMeta">Research Assistant · Supervisor: Prof. Stefania Garetto, Boston University · Mar 2025 – Sep 2025</div>
+        <p>Processed and standardized firm-level import and export transaction data across <b>multiple countries and years</b>, resolving inconsistencies in product codes, firm identifiers, and shipment classifications to prepare the dataset for empirical analysis.</p>
+        <p>Developed rule-based criteria to classify trade activities by firm type and transaction nature (e.g., <b>intermediated vs. direct trade</b>), enabling structured investigation into firm heterogeneity and global supply chain behavior; validated and documented data-cleaning decisions with the research team to build a clean, reliable <b>panel dataset</b> for studying international trade dynamics.</p>
+        <div class="chips">
+          <span class="chip">International Trade</span><span class="chip">Data Cleaning</span><span class="chip">Panel Data</span>
+        </div>
+      </div>
       <div class="researchCard reveal">
         <h3>Collusion in Plain Sight: Firms' Use of Public Announcements to Restrain Competition</h3>
         <div class="jobMeta">Research Assistant · Supervisor: Prof. Juan Ortner, Boston University · Mar 2025 – Jul 2025</div>
@@ -382,7 +594,7 @@
 
   <section id="education">
     <div class="wrap">
-      <h2><span class="num">04</span>Education</h2>
+      <h2><span class="num">06</span>Education</h2>
       <div class="eduGrid">
         <div class="eduCard reveal">
           <p class="school">Columbia University</p>
@@ -400,40 +612,6 @@
     </div>
   </section>
 
-  <section id="skills">
-    <div class="wrap">
-      <h2><span class="num">05</span>Skills</h2>
-      <p class="sectionLede">The toolkit behind the work.</p>
-      <div class="reveal">
-        <div class="skillGroup">
-          <h3>Programming</h3>
-          <div class="chips">
-            <span class="chip">Python (pandas · scikit-learn · NumPy)</span><span class="chip">SQL</span><span class="chip">R</span><span class="chip">Stata</span>
-          </div>
-        </div>
-        <div class="skillGroup">
-          <h3>Tools &amp; Visualization</h3>
-          <div class="chips">
-            <span class="chip">Tableau</span><span class="chip">Power BI</span><span class="chip">Advanced Excel (VBA · Pivot Tables)</span>
-          </div>
-        </div>
-        <div class="skillGroup">
-          <h3>Analytics &amp; Modeling</h3>
-          <div class="chips">
-            <span class="chip">Statistical Modeling</span><span class="chip">Machine Learning</span><span class="chip">A/B Testing</span>
-            <span class="chip">NLP / Text Analysis</span><span class="chip">Causal Inference</span><span class="chip">Cohort &amp; Funnel Analysis</span>
-            <span class="chip">Time-Series Analysis</span><span class="chip">Business Intelligence</span>
-          </div>
-        </div>
-        <div class="skillGroup">
-          <h3>Languages</h3>
-          <div class="chips">
-            <span class="chip">Mandarin (native)</span><span class="chip">English (fluent)</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <section id="contact" class="contact">
     <div class="wrap reveal">
@@ -441,7 +619,7 @@
       <p>I'm open to analyst and data-science opportunities in New York and beyond. No H-1B sponsorship required — STEM OPT through 2031, with E-3 visa eligibility thereafter.</p>
       <div class="heroBtns" style="justify-content:center;">
         <a class="btn primary" href="mailto:sydneyjiang00@gmail.com">sydneyjiang00@gmail.com</a>
-        <a class="btn ghost" href="https://www.linkedin.com/in/xin-ni-jiang-4a4721296/" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn ghost" href="https://www.linkedin.com/in/sydney-jiang-4a4721296/" target="_blank" rel="noopener">LinkedIn</a>
         <a class="btn ghost" href="https://github.com/sydneyjiang000" target="_blank" rel="noopener">GitHub</a>
       </div>
     </div>
@@ -453,22 +631,343 @@
 </footer>
 
 <script>
-  // theme toggle — follows system preference, remembers manual choice
-  const root = document.documentElement;
-  const saved = localStorage.getItem('theme');
-  if (saved) root.dataset.theme = saved;
-  else if (matchMedia('(prefers-color-scheme: dark)').matches) root.dataset.theme = 'dark';
-  document.getElementById('themeBtn').addEventListener('click', () => {
-    const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-    root.dataset.theme = next;
-    localStorage.setItem('theme', next);
+  // scroll-scrubbed water backdrop: scroll sets a target frame, and a rAF
+  // loop eases the current frame toward it so fast scrolls play through
+  // the intermediate frames instead of jumping
+  const vbCanvas = document.getElementById('vbCanvas');
+  const vbCtx = vbCanvas.getContext('2d');
+  const VB_COUNT = 241;
+  const vbSrc = i => `assets/bg/f${String(i + 1).padStart(3, '0')}.webp`;
+  const vbImgs = [];
+  let vbCur = 0, vbTarget = 0, vbRunning = false, vbLast = -1;
+
+  function vbDraw(idx, force) {
+    if (idx === vbLast && !force) return;
+    const im = vbImgs[idx];
+    if (!im || !im.complete || !im.naturalWidth) return;
+    const cw = vbCanvas.width, ch = vbCanvas.height;
+    const s = Math.max(cw / im.naturalWidth, ch / im.naturalHeight);
+    const dw = im.naturalWidth * s, dh = im.naturalHeight * s;
+    vbCtx.drawImage(im, (cw - dw) / 2, (ch - dh) / 2, dw, dh);
+    vbLast = idx;
+  }
+  function vbResize() {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    vbCanvas.width = innerWidth * dpr;
+    vbCanvas.height = innerHeight * dpr;
+    vbDraw(Math.round(vbCur), true);
+  }
+  function vbLoop() {
+    const diff = vbTarget - vbCur;
+    vbCur = Math.abs(diff) < 0.5 ? vbTarget : vbCur + diff * 0.16;
+    vbDraw(Math.round(vbCur));
+    if (vbCur !== vbTarget) requestAnimationFrame(vbLoop); else vbRunning = false;
+  }
+  function vbOnScroll() {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    vbTarget = Math.min(VB_COUNT - 1, Math.max(0, (max > 0 ? scrollY / max : 0) * (VB_COUNT - 1)));
+    if (!vbRunning) { vbRunning = true; requestAnimationFrame(vbLoop); }
+  }
+  vbResize();
+  {
+    const first = new Image();
+    first.src = vbSrc(0);
+    first.onload = () => { vbImgs[0] = first; vbDraw(0, true); };
+  }
+  addEventListener('load', () => {
+    for (let i = 1; i < VB_COUNT; i++) { const im = new Image(); im.src = vbSrc(i); vbImgs[i] = im; }
   });
+  addEventListener('resize', vbResize);
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    addEventListener('scroll', vbOnScroll, { passive: true });
+  }
 
   // scroll-reveal
   const io = new IntersectionObserver((entries) => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // lanyard badge: pendulum physics, draggable, with a gentle idle sway
+  (function () {
+    const lan = document.getElementById('lanyard');
+    const badge = document.getElementById('badge');
+    if (!lan || !badge || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const strap = document.getElementById('strapPath');
+    const stitch = document.getElementById('strapStitch');
+    const AX = 210, AY = -24;           // strap anchor (above the top edge)
+    const L0 = 88;                       // rest strap length
+    let L = L0, vL = 0, theta = 0.14, omega = 0, dragging = false, lastT = performance.now(), t = 0;
+    let dragPrev = null;
+
+    function frame(now) {
+      const dt = Math.min(0.032, (now - lastT) / 1000); lastT = now; t += dt;
+      if (!dragging && lan.offsetParent !== null) {
+        const breeze = 0.012 * Math.sin(t * 0.9);
+        const alpha = -(2400 / L) * Math.sin(theta - breeze) - 3.5 * omega;
+        omega += alpha * dt;
+        theta += omega * dt;
+        // elastic strap: the length itself is a lightly-damped spring, and
+        // fast swings stretch it centrifugally
+        const Lrest = L0 + 8 + Math.min(14, omega * omega * L * 0.004);
+        vL += (Lrest - L) * 50 * dt;
+        vL *= Math.max(0, 1 - 4.8 * dt);
+        L += vL * dt;
+      }
+      const bx = AX + Math.sin(theta) * L, by = AY + Math.cos(theta) * L;
+      const mx = AX + Math.sin(theta) * L * 0.5, my = AY + Math.cos(theta) * L * 0.52;
+      const d = `M ${AX} ${AY} Q ${mx} ${my} ${bx} ${by}`;
+      strap.setAttribute('d', d); stitch.setAttribute('d', d);
+      badge.style.transform = `translate(${bx - 132}px, ${by}px) rotate(${theta * 0.92}rad)`;
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+
+    badge.addEventListener('pointerdown', e => {
+      dragging = true; badge.classList.add('grabbing');
+      badge.setPointerCapture(e.pointerId);
+      dragPrev = { theta, t: performance.now() };
+      e.preventDefault();
+    });
+    badge.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      const r = lan.getBoundingClientRect();
+      const px = e.clientX - r.left, py = e.clientY - r.top;
+      const dx = px - AX, dy = Math.max(30, py - AY);
+      theta = Math.atan2(dx, dy);
+      const prevL = L;
+      L = Math.min(L0 + 170, Math.max(L0 - 35, Math.hypot(dx, dy)));
+      const now = performance.now(), dt = Math.max(8, now - dragPrev.t) / 1000;
+      omega = (theta - dragPrev.theta) / dt * 0.35;
+      vL = (L - prevL) / dt * 0.4;
+      dragPrev = { theta, t: now };
+    });
+    const release = () => { dragging = false; badge.classList.remove('grabbing'); };
+    badge.addEventListener('pointerup', release);
+    badge.addEventListener('pointercancel', release);
+  })();
+
+  // about text reveal: scroll progress inks the words in, slightly ahead
+  // of the scroll position so the paragraph finishes early
+  const aboutText = document.querySelector('.aboutText');
+  let rws = [];
+  if (aboutText && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    (function splitWords(el) {
+      [...el.childNodes].forEach(node => {
+        if (node.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          node.textContent.split(/(\s+)/).forEach(tok => {
+            if (!tok) return;
+            if (/^\s+$/.test(tok)) { frag.appendChild(document.createTextNode(tok)); return; }
+            const s = document.createElement('span');
+            s.className = 'rw'; s.textContent = tok;
+            frag.appendChild(s);
+          });
+          node.replaceWith(frag);
+        } else if (node.nodeType === 1) splitWords(node);
+      });
+    })(aboutText);
+    rws = [...aboutText.querySelectorAll('.rw')];
+  }
+  // particle wordmarks: rasterize the word(s) offscreen, spawn a dot per
+  // sampled pixel; dots flee the pointer and spring home when it leaves
+  function particleWord(cv, lines) {
+    if (!cv) return;
+    const pctx = cv.getContext('2d');
+    const pReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let parts = [], W = 0, H = 0, dpr = 1, running = false;
+    const mouse = { x: -9999, y: -9999 };
+    function build() {
+      dpr = Math.min(devicePixelRatio || 1, 2);
+      W = cv.clientWidth || 320;
+      const off = document.createElement('canvas');
+      const o = off.getContext('2d');
+      const font = (px) => `700 ${px}px "Palatino Linotype","Book Antiqua",Palatino,Georgia,serif`;
+      o.font = font(100);
+      const widest = Math.max(...lines.map(t => o.measureText(t).width));
+      const f = Math.min(210, 100 * (W / widest) * 0.98);
+      const gap = f * 0.12;
+      H = Math.ceil(lines.length === 1 ? f * 0.92 : f * 1.72);
+      cv.style.height = H + 'px';
+      cv.width = W * dpr; cv.height = H * dpr;
+      off.width = W; off.height = H;
+      o.fillStyle = '#fff'; o.textAlign = 'left'; o.textBaseline = 'alphabetic';
+      o.font = font(f);
+      lines.forEach((t, i) => o.fillText(t, 0, f * 0.8 + i * (f * 0.72 + gap)));
+      const img = o.getImageData(0, 0, W, H).data;
+      parts = [];
+      // translucent greens picked to sit inside the water backdrop
+      const cols = ['rgba(196,212,182,.9)', 'rgba(166,188,150,.8)', 'rgba(138,154,126,.75)',
+                    'rgba(120,168,148,.65)', 'rgba(96,138,114,.55)', 'rgba(214,226,204,.95)'];
+      for (let y = 0; y < H; y += 4) for (let x = 0; x < W; x += 4) {
+        if (img[(y * W + x) * 4 + 3] > 128) {
+          parts.push({ hx: x, hy: y, x, y, vx: 0, vy: 0,
+            c: cols[(Math.random() * cols.length) | 0],
+            r: Math.random() < .16 ? 2.1 : 1.4 });
+        }
+      }
+      if (!running) step();
+    }
+    function step() {
+      pctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      pctx.clearRect(0, 0, W, H);
+      const R = 85, R2 = R * R;
+      for (const p of parts) {
+        if (!pReduced) {
+          const dx = p.x - mouse.x, dy = p.y - mouse.y, d2 = dx * dx + dy * dy;
+          if (d2 < R2) { const d = Math.sqrt(d2) || 1, f = (R - d) / R; p.vx += dx / d * f * 7; p.vy += dy / d * f * 7; }
+          p.vx += (p.hx - p.x) * 0.055; p.vy += (p.hy - p.y) * 0.055;
+          p.vx *= 0.86; p.vy *= 0.86; p.x += p.vx; p.y += p.vy;
+        }
+        pctx.fillStyle = p.c;
+        pctx.fillRect(p.x, p.y, p.r, p.r);
+      }
+    }
+    function loop() { if (!running) return; step(); requestAnimationFrame(loop); }
+    new IntersectionObserver(es => es.forEach(e => {
+      const was = running; running = e.isIntersecting && !pReduced;
+      if (running && !was) requestAnimationFrame(loop);
+    })).observe(cv);
+    cv.addEventListener('pointermove', e => {
+      const r = cv.getBoundingClientRect();
+      mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+    });
+    cv.addEventListener('pointerleave', () => { mouse.x = -9999; mouse.y = -9999; });
+    addEventListener('resize', build);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(build);
+    build();
+  }
+  particleWord(document.getElementById('aboutCanvas'), ['ABOUT', 'ME']);
+  particleWord(document.getElementById('skillsCanvas'), ['SKILLS']);
+
+  // pin the About section mid-screen while the text inks in (~2 swipes),
+  // then release; falls back to flow-based reveal when it doesn't fit
+  const aboutStage = document.getElementById('aboutStage');
+  const aboutSection = document.getElementById('about');
+  let stageExtra = 0, stageTop = 0, stagePinned = false;
+  function layoutAboutStage() {
+    if (!rws.length) return;
+    const h = aboutSection.offsetHeight;
+    stagePinned = h < innerHeight * 0.85;
+    aboutStage.classList.toggle('pinned', stagePinned);
+    if (stagePinned) {
+      stageExtra = Math.round(innerHeight * 1.05);
+      stageTop = Math.max(60, Math.round((innerHeight - h) / 2));
+      aboutSection.style.top = stageTop + 'px';
+      aboutStage.style.height = (h + stageExtra) + 'px';
+    } else {
+      aboutSection.style.top = '';
+      aboutStage.style.height = '';
+    }
+    textReveal();
+  }
+  function textReveal() {
+    if (!rws.length) return;
+    let progress;
+    if (stagePinned) {
+      const r = aboutStage.getBoundingClientRect();
+      // finish at 88% of the pinned distance so it's fully lit before release
+      progress = (stageTop - r.top) / (stageExtra * 0.88);
+    } else {
+      const r = aboutText.getBoundingClientRect();
+      progress = (innerHeight * 0.72 - r.top) / (r.height * 1.15);
+    }
+    const lead = 7;
+    const pos = Math.min(1, Math.max(0, progress)) * (rws.length + lead);
+    rws.forEach((w, i) => {
+      const t = Math.min(1, Math.max(0, (pos - i) / lead));
+      w.style.opacity = (0.24 + 0.76 * t).toFixed(3);
+    });
+  }
+  addEventListener('scroll', () => requestAnimationFrame(textReveal), { passive: true });
+  addEventListener('resize', layoutAboutStage);
+  addEventListener('load', layoutAboutStage);
+  layoutAboutStage();
+
+  // projects — record crate
+  const PROJECTS = [
+    {
+      title: 'Payment & Revenue Health',
+      cover: 'assets/projects/payment.webp',
+      result: 'True invoice failure rate is ~10% — not the headline 40% — and ~37% of at-risk revenue is recoverable with smarter dunning.',
+      desc: 'End-to-end analysis of a SaaS business’s Stripe payments: collapsed auto-retries to the invoice level to correct the inflated failure rate, bucketed decline reasons into recoverable vs. hard, and showed annual billing cuts fee leakage from 8.3% to 4.6%.',
+      chips: ['Python · pandas', 'Tableau', 'Payments Data'],
+      links: [
+        { label: '▶ Live Tableau dashboard', url: 'https://public.tableau.com/app/profile/sydney.jiang/viz/PaymentRevenueHealthAnalysis/PaymentRevenueHealth', live: true },
+        { label: 'GitHub', url: 'https://github.com/sydneyjiang000/payment-revenue-analytics' }
+      ]
+    },
+    {
+      title: 'Voice of the User — Survey Dashboard',
+      cover: 'assets/projects/survey.webp',
+      result: '1,840 survey responses turned into an interactive five-section report — 58% top-box promoters; social & video channels bring the most enthusiastic users.',
+      desc: 'Cleans messy survey data (merging inconsistent free-text answers, coding open-ended feature requests into themes) and renders a fully interactive dashboard. Synthetic-data demo of a real analysis built during my internship.',
+      chips: ['JavaScript · Chart.js', 'Python · pandas', 'Survey Analytics'],
+      links: [
+        { label: '▶ Live demo', url: 'projects/survey/', live: true },
+        { label: 'GitHub', url: 'https://github.com/sydneyjiang000/usersurvey-dashboard-demo' }
+      ]
+    },
+    {
+      title: 'Text Style Classifier',
+      cover: 'assets/projects/textstyle.webp',
+      result: 'Five stylistic fingerprints — vocabulary, word lengths, stems, sentence rhythm, phrasing — vote on who wrote a text; the demo memo was attributed 5–0.',
+      desc: 'Authorship attribution built from scratch in pure Python, no ML libraries: each text becomes a statistical style model, and log-likelihood scores across five features decide which source an unknown text resembles — naive-Bayes mechanics, hand-rolled.',
+      chips: ['Pure Python', 'Log-likelihood · Naive Bayes', 'NLP from Scratch'],
+      links: [
+        { label: 'GitHub', url: 'https://github.com/sydneyjiang000/text-style-classifier' }
+      ]
+    },
+    {
+      title: 'MBTA Bus Ridership, 2016–2024',
+      cover: 'assets/projects/mbta.webp',
+      result: 'COVID cut average loads roughly in half; weekday and weekend service recovered on different paths, and some routes permanently gained share of system ridership.',
+      desc: 'Team analysis of nine years of Boston bus ridership in R: time-series trends, route-level variability, recovery rates against a pre-COVID baseline, and a spatial map of the busiest routes.',
+      chips: ['R · tidyverse', 'Geospatial · sf & tmap', 'Time Series'],
+      links: [
+        { label: 'GitHub & report', url: 'https://github.com/sydneyjiang000/mbta-ridership-analysis' }
+      ]
+    }
+  ];
+
+  const crate = document.getElementById('crate');
+  const npImage = document.getElementById('npImage');
+  const npTitle = document.getElementById('npTitle');
+  const npResult = document.getElementById('npResult');
+  const npDesc = document.getElementById('npDesc');
+  const npChips = document.getElementById('npChips');
+  const npLinks = document.getElementById('npLinks');
+
+  PROJECTS.forEach((pr, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'sleeve';
+    btn.setAttribute('role', 'tab');
+    btn.innerHTML = `<img class="cover" src="${pr.cover}" alt="${pr.title} cover"><div class="sleeveName">${pr.title}</div>`;
+    btn.addEventListener('click', () => playRecord(i));
+    crate.appendChild(btn);
+    const pre = new Image(); pre.src = pr.cover;
+  });
+
+  function playRecord(i) {
+    const pr = PROJECTS[i];
+    [...crate.children].forEach((el, j) => {
+      el.classList.toggle('active', j === i);
+      el.setAttribute('aria-selected', j === i);
+    });
+    npImage.style.opacity = 0;
+    setTimeout(() => {
+      npImage.src = pr.cover;
+      npImage.alt = pr.title + ' visualization';
+      npImage.style.opacity = 1;
+    }, 220);
+    npTitle.textContent = pr.title;
+    npResult.textContent = pr.result;
+    npDesc.textContent = pr.desc;
+    npChips.innerHTML = pr.chips.map(c => `<span class="chip">${c}</span>`).join('');
+    npLinks.innerHTML = pr.links.map(l =>
+      `<a href="${l.url}" target="_blank" rel="noopener"${l.live ? ' class="live"' : ''}>${l.label}</a>`).join('');
+  }
+  playRecord(0);
 
   // nav active state
   const links = [...document.querySelectorAll('.navLinks a')];
