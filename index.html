@@ -174,7 +174,7 @@
   .sectionLede{color:var(--ink-soft);margin:0 0 36px;max-width:640px;}
 
   /* about — giant particle ABOUT on the left, copy on the right */
-  .aboutGrid{display:grid;grid-template-columns:320px 1fr;gap:56px;align-items:center;}
+  .aboutGrid{display:grid;grid-template-columns:400px 1fr;gap:56px;align-items:center;}
   .aboutArt{position:relative;}
   #aboutCanvas{display:block;width:100%;cursor:default;}
   .srOnly{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
@@ -758,26 +758,27 @@
     const mouse = { x: -9999, y: -9999 };
     function build() {
       dpr = Math.min(devicePixelRatio || 1, 2);
-      const vertical = innerWidth > 900;
-      W = cv.clientWidth || 320; H = vertical ? 540 : 150;
+      W = cv.clientWidth || 320;
+      const off = document.createElement('canvas');
+      const o = off.getContext('2d');
+      const font = (px) => `700 ${px}px "Palatino Linotype","Book Antiqua",Palatino,Georgia,serif`;
+      // fit "ABOUT" to the column width, "ME" sits on line two
+      o.font = font(100);
+      const f = Math.min(150, 100 * (W / o.measureText('ABOUT').width) * 0.98);
+      const gap = f * 0.16;
+      H = Math.ceil(f * 2.12 + gap);
       cv.style.height = H + 'px';
       cv.width = W * dpr; cv.height = H * dpr;
-      const off = document.createElement('canvas');
       off.width = W; off.height = H;
-      const o = off.getContext('2d');
-      o.fillStyle = '#fff'; o.textAlign = 'center'; o.textBaseline = 'middle';
-      const font = (px) => `700 ${px}px "Palatino Linotype","Book Antiqua",Palatino,Georgia,serif`;
-      if (vertical) {
-        o.translate(W / 2, H / 2); o.rotate(-Math.PI / 2);
-        o.font = font(Math.min(158, W * 0.66));
-        o.fillText('ABOUT', 0, 0);
-      } else {
-        o.font = font(Math.min(110, W / 4.6));
-        o.fillText('ABOUT', W / 2, H / 2);
-      }
+      o.fillStyle = '#fff'; o.textAlign = 'left'; o.textBaseline = 'alphabetic';
+      o.font = font(f);
+      o.fillText('ABOUT', 0, f * 0.88);
+      o.fillText('ME', 0, f * 1.94 + gap);
       const img = o.getImageData(0, 0, W, H).data;
       parts = [];
-      const cols = ['#e8e4dd', '#e8e4dd', '#e8e4dd', '#d8d4cc', '#8a9a7e', '#c9838a'];
+      // translucent greens picked to sit inside the water backdrop
+      const cols = ['rgba(196,212,182,.9)', 'rgba(166,188,150,.8)', 'rgba(138,154,126,.75)',
+                    'rgba(120,168,148,.65)', 'rgba(96,138,114,.55)', 'rgba(214,226,204,.95)'];
       for (let y = 0; y < H; y += 4) for (let x = 0; x < W; x += 4) {
         if (img[(y * W + x) * 4 + 3] > 128) {
           parts.push({ hx: x, hy: y, x, y, vx: 0, vy: 0,
