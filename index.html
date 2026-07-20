@@ -184,6 +184,9 @@
   .mobileFacts{display:none;margin-top:28px;}
   @media(max-width:1100px){ .mobileFacts{display:block;} }
   /* scroll-driven text reveal: words go dim -> bold white as you scroll */
+  /* non-selectable so scroll-dragging over the pinned section can't
+     accidentally highlight the copy (which the sage ::selection turns green) */
+  .aboutText{-webkit-user-select:none;user-select:none;}
   .aboutText p{font-size:17.5px;line-height:1.75;color:#fff;}
   .aboutText .rw{opacity:.24;}
   .factCard{
@@ -455,7 +458,7 @@
         </div>
         <div class="aboutText">
           <p>I move fast, stay curious, and follow through, traits forged on the fast-paced trading floors and sharpened within an AI startup. That mix gave me classic business analytics fundamentals, a practical read on where AI is headed, and the instinct to put it to work without cutting corners.</p>
-          <p>Outside of work I keep building, academic models you can explore, tools that solve real problems. The AI world moves fast enough that there's no fixed playbook, so I learn as I go and use AI itself to go after problems nobody's solved yet.</p>
+          <p>Outside of work I keep building, academic models that can explore, tools that solve real problems. The AI world moves fast enough that there's no fixed playbook, so I learn as I go and use AI itself to go after problems nobody's solved yet.</p>
         </div>
         <div class="factCard mobileFacts">
           <h3>Quick facts</h3>
