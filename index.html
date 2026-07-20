@@ -97,6 +97,46 @@
   .btn.ghost{color:var(--sage-deep);}
   .btn.ghost:hover{background:var(--sage-tint);text-decoration:none;}
 
+  /* lanyard badge — physics-hung ID card carrying the quick facts */
+  #lanyard{position:absolute;top:0;right:4%;width:380px;height:660px;z-index:6;pointer-events:none;}
+  #lanyardSvg{position:absolute;inset:0;overflow:visible;}
+  #badge{
+    position:absolute;left:0;top:0;width:264px;pointer-events:auto;cursor:grab;
+    user-select:none;-webkit-user-select:none;touch-action:none;will-change:transform;
+    transform-origin:50% -6px;
+  }
+  #badge.grabbing{cursor:grabbing;}
+  .badgeClasp{
+    width:58px;height:16px;margin:0 auto;border-radius:4px 4px 8px 8px;
+    background:linear-gradient(180deg,#8f8f96,#5c5c63 60%,#3f3f45);
+    box-shadow:0 2px 4px rgba(0,0,0,.5);
+  }
+  .badgeCard{
+    margin-top:6px;background:linear-gradient(165deg,#27272d,#1a1a1f 70%);
+    border:1px solid #3a3a41;border-radius:16px;padding:16px 20px 14px;
+    box-shadow:0 30px 50px -22px rgba(0,0,0,.75), inset 0 1px 0 rgba(255,255,255,.05);
+  }
+  .badgeHole{
+    width:46px;height:9px;border-radius:5px;background:#0b0b0e;margin:0 auto 12px;
+    box-shadow:inset 0 1px 3px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.06);
+  }
+  .badgeName{
+    font-family:var(--serif);font-size:19px;font-weight:700;letter-spacing:1px;text-align:center;
+    color:var(--ink);display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .badgeName .dot{width:7px;height:7px;border-radius:50%;background:var(--sage);}
+  .badgeRole{font-size:10.5px;letter-spacing:2.5px;text-transform:uppercase;color:var(--sage-deep);text-align:center;margin:3px 0 12px;}
+  .badgeRows{list-style:none;margin:0;padding:0;font-size:12.5px;border-top:1px solid #34343b;}
+  .badgeRows li{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px dashed #34343b;}
+  .badgeRows li span:first-child{color:var(--ink-faint);white-space:nowrap;}
+  .badgeRows li span:last-child{text-align:right;font-weight:600;color:var(--ink);}
+  .badgeBar{
+    margin-top:12px;height:26px;border-radius:6px;opacity:.8;
+    background:repeating-linear-gradient(90deg,#d8d4cc 0 2px,transparent 2px 5px,#d8d4cc 5px 6px,transparent 6px 11px,#d8d4cc 11px 14px,transparent 14px 17px);
+  }
+  @media(max-width:1100px){ #lanyard{display:none;} }
+  @media(prefers-reduced-motion:reduce){ #lanyard{display:none;} }
+
   /* stat strip */
   .stats{
     display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
@@ -124,8 +164,10 @@
   .sectionLede{color:var(--ink-soft);margin:0 0 36px;max-width:640px;}
 
   /* about */
-  .aboutGrid{display:grid;grid-template-columns:1.6fr 1fr;gap:36px;align-items:start;}
+  .aboutGrid{max-width:680px;}
   .aboutGrid p{margin:0 0 16px;color:var(--ink);}
+  .mobileFacts{display:none;margin-top:28px;}
+  @media(max-width:1100px){ .mobileFacts{display:block;} }
   /* scroll-driven text reveal: words go dim -> bold white as you scroll */
   .aboutText p{font-size:17.5px;line-height:1.75;color:#fff;}
   .aboutText .rw{opacity:.24;}
@@ -309,6 +351,29 @@
 </nav>
 
 <header class="hero">
+  <div id="lanyard" aria-hidden="true">
+    <svg id="lanyardSvg">
+      <path id="strapPath" fill="none" stroke="#4a5544" stroke-width="17" stroke-linecap="round"></path>
+      <path id="strapStitch" fill="none" stroke="#7d8a72" stroke-width="2" stroke-dasharray="7 6" stroke-linecap="round"></path>
+    </svg>
+    <div id="badge">
+      <div class="badgeClasp"></div>
+      <div class="badgeCard">
+        <div class="badgeHole"></div>
+        <div class="badgeName"><span class="dot"></span>SYDNEY JIANG</div>
+        <div class="badgeRole">Quick Facts</div>
+        <ul class="badgeRows">
+          <li><span>Based in</span><span>New York, NY</span></li>
+          <li><span>Next up</span><span>Columbia MSBA '28</span></li>
+          <li><span>Focus</span><span>Quant Research ·<br>Risk · Applied AI</span></li>
+          <li><span>Credentials</span><span>CFA Level I Candidate</span></li>
+          <li><span>Languages</span><span>English · Mandarin</span></li>
+          <li><span>Work auth</span><span>No H-1B needed<br>(STEM OPT '31)</span></li>
+        </ul>
+        <div class="badgeBar"></div>
+      </div>
+    </div>
+  </div>
   <div class="wrap">
     <div class="eyebrow">Business × Tech × AI</div>
     <h1>Xin&nbsp;Ni (Sydney) Jiang</h1>
@@ -344,7 +409,7 @@
           <p>I move fast, stay curious, and follow through — traits forged on the fast-paced trading floors and sharpened within an AI startup. That mix gave me classic business analytics fundamentals, a practical read on where AI is headed, and the instinct to put it to work without cutting corners.</p>
           <p>Outside of work I keep building — academic models you can explore, tools that solve real problems. The AI world moves fast enough that there's no fixed playbook, so I learn as I go and use AI itself to go after problems nobody's solved yet.</p>
         </div>
-        <div class="factCard">
+        <div class="factCard mobileFacts">
           <h3>Quick facts</h3>
           <ul>
             <li><span>Based in</span><span>New York, NY</span></li>
@@ -590,6 +655,58 @@
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // lanyard badge: pendulum physics, draggable, with a gentle idle sway
+  (function () {
+    const lan = document.getElementById('lanyard');
+    const badge = document.getElementById('badge');
+    if (!lan || !badge || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const strap = document.getElementById('strapPath');
+    const stitch = document.getElementById('strapStitch');
+    const AX = 210, AY = -24;           // strap anchor (above the top edge)
+    const L0 = 130;                      // rest strap length
+    let L = L0, theta = 0.14, omega = 0, dragging = false, lastT = performance.now(), t = 0;
+    let dragPrev = null;
+
+    function frame(now) {
+      const dt = Math.min(0.032, (now - lastT) / 1000); lastT = now; t += dt;
+      if (!dragging && lan.offsetParent !== null) {
+        const breeze = 0.012 * Math.sin(t * 0.9);
+        const alpha = -(2400 / L) * Math.sin(theta - breeze) - 1.1 * omega;
+        omega += alpha * dt;
+        theta += omega * dt;
+        L += (L0 - L) * Math.min(1, dt * 6); // relax any drag stretch
+      }
+      const bx = AX + Math.sin(theta) * L, by = AY + Math.cos(theta) * L;
+      const mx = AX + Math.sin(theta) * L * 0.5, my = AY + Math.cos(theta) * L * 0.52;
+      const d = `M ${AX} ${AY} Q ${mx} ${my} ${bx} ${by}`;
+      strap.setAttribute('d', d); stitch.setAttribute('d', d);
+      badge.style.transform = `translate(${bx - 132}px, ${by}px) rotate(${theta * 0.92}rad)`;
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+
+    badge.addEventListener('pointerdown', e => {
+      dragging = true; badge.classList.add('grabbing');
+      badge.setPointerCapture(e.pointerId);
+      dragPrev = { theta, t: performance.now() };
+      e.preventDefault();
+    });
+    badge.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      const r = lan.getBoundingClientRect();
+      const px = e.clientX - r.left, py = e.clientY - r.top;
+      const dx = px - AX, dy = Math.max(40, py - AY);
+      theta = Math.atan2(dx, dy);
+      L = Math.min(L0 + 70, Math.max(L0 - 40, Math.hypot(dx, dy)));
+      const now = performance.now(), dt = Math.max(8, now - dragPrev.t) / 1000;
+      omega = (theta - dragPrev.theta) / dt * 0.55;
+      dragPrev = { theta, t: now };
+    });
+    const release = () => { dragging = false; badge.classList.remove('grabbing'); };
+    badge.addEventListener('pointerup', release);
+    badge.addEventListener('pointercancel', release);
+  })();
 
   // about text reveal: scroll progress inks the words in, slightly ahead
   // of the scroll position so the paragraph finishes early
