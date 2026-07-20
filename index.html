@@ -124,7 +124,7 @@
   .aboutGrid{display:grid;grid-template-columns:1.6fr 1fr;gap:36px;align-items:start;}
   .aboutGrid p{margin:0 0 16px;color:var(--ink);}
   /* scroll-driven text reveal: words go dim -> bold white as you scroll */
-  .aboutText p{font-size:17.5px;line-height:1.75;font-weight:600;color:#fff;}
+  .aboutText p{font-size:17.5px;line-height:1.75;color:#fff;}
   .aboutText .rw{opacity:.24;}
   .factCard{
     background:var(--panel);border:1px solid var(--line);border-radius:14px;
@@ -610,7 +610,7 @@
   function textReveal() {
     if (!rws.length) return;
     const r = aboutText.getBoundingClientRect();
-    const progress = (innerHeight * 0.9 - r.top) / (r.height * 0.72);
+    const progress = (innerHeight * 0.72 - r.top) / (r.height * 1.35);
     const lead = 7;
     const pos = Math.min(1, Math.max(0, progress)) * (rws.length + lead);
     rws.forEach((w, i) => {
