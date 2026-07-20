@@ -112,7 +112,10 @@
 
   /* ---------- sections ---------- */
   section{padding:64px 0;}
-  section + section{border-top:1px solid var(--line);}
+  section + section, #aboutStage + section{border-top:1px solid var(--line);}
+  /* about pins mid-screen while its text inks in, then releases */
+  #aboutStage{position:relative;}
+  #aboutStage.pinned #about{position:sticky;}
   h2{
     font-family:var(--serif);font-size:clamp(26px,3.6vw,32px);font-weight:700;margin:0 0 6px;
     display:flex;align-items:baseline;gap:14px;
@@ -332,6 +335,7 @@
 </header>
 
 <main>
+  <div id="aboutStage">
   <section id="about">
     <div class="wrap">
       <h2><span class="num">01</span>About</h2>
@@ -354,6 +358,8 @@
       </div>
     </div>
   </section>
+  </div>
+
   <section id="skills">
     <div class="wrap">
       <h2><span class="num">02</span>Skills</h2>
@@ -607,10 +613,38 @@
     })(aboutText);
     rws = [...aboutText.querySelectorAll('.rw')];
   }
+  // pin the About section mid-screen while the text inks in (~2 swipes),
+  // then release; falls back to flow-based reveal when it doesn't fit
+  const aboutStage = document.getElementById('aboutStage');
+  const aboutSection = document.getElementById('about');
+  let stageExtra = 0, stageTop = 0, stagePinned = false;
+  function layoutAboutStage() {
+    if (!rws.length) return;
+    const h = aboutSection.offsetHeight;
+    stagePinned = h < innerHeight * 0.85;
+    aboutStage.classList.toggle('pinned', stagePinned);
+    if (stagePinned) {
+      stageExtra = Math.round(innerHeight * 1.05);
+      stageTop = Math.max(60, Math.round((innerHeight - h) / 2));
+      aboutSection.style.top = stageTop + 'px';
+      aboutStage.style.height = (h + stageExtra) + 'px';
+    } else {
+      aboutSection.style.top = '';
+      aboutStage.style.height = '';
+    }
+    textReveal();
+  }
   function textReveal() {
     if (!rws.length) return;
-    const r = aboutText.getBoundingClientRect();
-    const progress = (innerHeight * 0.72 - r.top) / (r.height * 1.35);
+    let progress;
+    if (stagePinned) {
+      const r = aboutStage.getBoundingClientRect();
+      // finish at 88% of the pinned distance so it's fully lit before release
+      progress = (stageTop - r.top) / (stageExtra * 0.88);
+    } else {
+      const r = aboutText.getBoundingClientRect();
+      progress = (innerHeight * 0.72 - r.top) / (r.height * 1.15);
+    }
     const lead = 7;
     const pos = Math.min(1, Math.max(0, progress)) * (rws.length + lead);
     rws.forEach((w, i) => {
@@ -619,7 +653,9 @@
     });
   }
   addEventListener('scroll', () => requestAnimationFrame(textReveal), { passive: true });
-  textReveal();
+  addEventListener('resize', layoutAboutStage);
+  addEventListener('load', layoutAboutStage);
+  layoutAboutStage();
 
   // projects — record crate
   const PROJECTS = [
