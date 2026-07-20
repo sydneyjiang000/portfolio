@@ -972,10 +972,11 @@
   function layoutSkillsStage() {
     if (!skillGroups.length || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const h = skillsSection.offsetHeight;
-    sStagePinned = h < innerHeight * 0.85;
+    // pin whenever there's at least 120px of scroll room below the section
+    sStagePinned = h + 120 < innerHeight;
     skillsStage.classList.toggle('pinned', sStagePinned);
     if (sStagePinned) {
-      sStageExtra = Math.round(innerHeight * 2.0);
+      sStageExtra = Math.round(Math.max(innerHeight * 2.0, innerHeight - h + 200));
       sStageTop = Math.max(60, Math.round((innerHeight - h) / 2));
       skillsSection.style.top = sStageTop + 'px';
       skillsStage.style.height = (h + sStageExtra) + 'px';
