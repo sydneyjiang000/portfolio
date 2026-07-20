@@ -771,9 +771,9 @@
         theta += omega * dt;
         // elastic strap: the length itself is a lightly-damped spring, and
         // fast swings stretch it centrifugally
-        const Lrest = L0 + 8 + Math.min(14, omega * omega * L * 0.004);
+        const Lrest = L0 + 4 + Math.min(6, omega * omega * L * 0.0022);
         vL += (Lrest - L) * 50 * dt;
-        vL *= Math.max(0, 1 - 4.8 * dt);
+        vL *= Math.max(0, 1 - 7.5 * dt);
         L += vL * dt;
       }
       const bx = AX + Math.sin(theta) * L, by = AY + Math.cos(theta) * L;
@@ -798,10 +798,10 @@
       const dx = px - AX, dy = Math.max(30, py - AY);
       theta = Math.atan2(dx, dy);
       const prevL = L;
-      L = Math.min(L0 + 170, Math.max(L0 - 35, Math.hypot(dx, dy)));
+      L = Math.min(L0 + 80, Math.max(L0 - 25, Math.hypot(dx, dy)));
       const now = performance.now(), dt = Math.max(8, now - dragPrev.t) / 1000;
       omega = (theta - dragPrev.theta) / dt * 0.35;
-      vL = (L - prevL) / dt * 0.4;
+      vL = (L - prevL) / dt * 0.25;
       dragPrev = { theta, t: now };
     });
     const release = () => { dragging = false; badge.classList.remove('grabbing'); };
