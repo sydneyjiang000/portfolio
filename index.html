@@ -174,7 +174,7 @@
   .sectionLede{color:var(--ink-soft);margin:0 0 36px;max-width:640px;}
 
   /* about — giant particle ABOUT on the left, copy on the right */
-  .aboutGrid{display:grid;grid-template-columns:400px 1fr;gap:56px;align-items:center;}
+  .aboutGrid{display:grid;grid-template-columns:1.08fr 1fr;gap:56px;align-items:center;}
   .aboutArt{position:relative;}
   #aboutCanvas{display:block;width:100%;cursor:default;}
   .srOnly{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
@@ -762,18 +762,20 @@
       const off = document.createElement('canvas');
       const o = off.getContext('2d');
       const font = (px) => `700 ${px}px "Palatino Linotype","Book Antiqua",Palatino,Georgia,serif`;
-      // fit "ABOUT" to the column width, "ME" sits on line two
+      // "ABOUT" fills the column width; the two lines are spread apart so the
+      // lockup's vertical span matches the copy next to it
       o.font = font(100);
-      const f = Math.min(150, 100 * (W / o.measureText('ABOUT').width) * 0.98);
-      const gap = f * 0.16;
-      H = Math.ceil(f * 2.12 + gap);
+      const f = Math.min(210, 100 * (W / o.measureText('ABOUT').width) * 0.98);
+      const textEl = document.querySelector('.aboutText');
+      const textH = (textEl && textEl.offsetHeight > 100) ? textEl.offsetHeight : 420;
+      H = Math.ceil(Math.max(f * 2.16, textH));
       cv.style.height = H + 'px';
       cv.width = W * dpr; cv.height = H * dpr;
       off.width = W; off.height = H;
       o.fillStyle = '#fff'; o.textAlign = 'left'; o.textBaseline = 'alphabetic';
       o.font = font(f);
-      o.fillText('ABOUT', 0, f * 0.88);
-      o.fillText('ME', 0, f * 1.94 + gap);
+      o.fillText('ABOUT', 0, f * 0.82);
+      o.fillText('ME', 0, H - f * 0.05);
       const img = o.getImageData(0, 0, W, H).data;
       parts = [];
       // translucent greens picked to sit inside the water backdrop
