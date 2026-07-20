@@ -762,20 +762,18 @@
       const off = document.createElement('canvas');
       const o = off.getContext('2d');
       const font = (px) => `700 ${px}px "Palatino Linotype","Book Antiqua",Palatino,Georgia,serif`;
-      // "ABOUT" fills the column width; the two lines are spread apart so the
-      // lockup's vertical span matches the copy next to it
+      // "ABOUT" fills the column width; "ME" sits tight on the second line
       o.font = font(100);
       const f = Math.min(210, 100 * (W / o.measureText('ABOUT').width) * 0.98);
-      const textEl = document.querySelector('.aboutText');
-      const textH = (textEl && textEl.offsetHeight > 100) ? textEl.offsetHeight : 420;
-      H = Math.ceil(Math.max(f * 2.16, textH));
+      const gap = f * 0.12;
+      H = Math.ceil(f * 1.72);
       cv.style.height = H + 'px';
       cv.width = W * dpr; cv.height = H * dpr;
       off.width = W; off.height = H;
       o.fillStyle = '#fff'; o.textAlign = 'left'; o.textBaseline = 'alphabetic';
       o.font = font(f);
-      o.fillText('ABOUT', 0, f * 0.82);
-      o.fillText('ME', 0, H - f * 0.05);
+      o.fillText('ABOUT', 0, f * 0.8);
+      o.fillText('ME', 0, f * 1.52 + gap);
       const img = o.getImageData(0, 0, W, H).data;
       parts = [];
       // translucent greens picked to sit inside the water backdrop
