@@ -162,10 +162,10 @@
 
   /* ---------- sections ---------- */
   section{padding:64px 0;}
-  section + section, #aboutStage + section{border-top:1px solid var(--line);}
+  section + section, #aboutStage + section, #skillsStage + section{border-top:1px solid var(--line);}
   /* about pins mid-screen while its text inks in, then releases */
-  #aboutStage{position:relative;}
-  #aboutStage.pinned #about{position:sticky;}
+  #aboutStage, #skillsStage{position:relative;}
+  #aboutStage.pinned #about, #skillsStage.pinned #skills{position:sticky;}
   h2{
     font-family:var(--serif);font-size:clamp(26px,3.6vw,32px);font-weight:700;margin:0 0 6px;
     display:flex;align-items:baseline;gap:14px;
@@ -351,7 +351,18 @@
     margin:0 0 12px;display:flex;align-items:center;gap:10px;
   }
   .skillGroup h3::after{content:"";flex:1;height:1px;background:var(--line);}
-  .skillGroup .chips .chip{font-size:13px;padding:7px 15px;}
+  .skillGroup .chips .chip{
+    font-size:13px;padding:7px 15px;
+    transition:background-color .35s,color .35s,border-color .35s;
+  }
+  .skillGroup .chips .chip.lit{background:var(--sage-deep);color:var(--sage-tint);border-color:var(--sage-tint);}
+  @media(max-width:900px){
+    .skillGroup .chips .chip{transition-duration:.18s;}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .skillGroup .chips .chip{transition:none;}
+    .skillGroup .chips .chip.lit{background:var(--sage-deep);color:var(--sage-tint);border-color:var(--sage-tint);}
+  }
 
   /* contact */
   .contact{text-align:center;padding:80px 0 70px;}
@@ -471,6 +482,7 @@
   </section>
   </div>
 
+  <div id="skillsStage">
   <section id="skills">
     <div class="wrap">
       <div class="skillsGrid reveal">
@@ -649,6 +661,7 @@
       </div>
     </div>
   </section>
+  </div>
 
   <section id="education">
     <div class="wrap">
@@ -941,6 +954,62 @@
   addEventListener('resize', layoutAboutStage);
   addEventListener('load', layoutAboutStage);
   layoutAboutStage();
+
+  // skills pin + chip reveal: each skill group lights up row by row as you scroll
+  const skillsStage = document.getElementById('skillsStage');
+  const skillsSection = document.getElementById('skills');
+  const skillGroups = [...document.querySelectorAll('#skills .skillGroup')];
+  let sStageExtra = 0, sStageTop = 0, sStagePinned = false;
+  function lerpColor(a, b, t) {
+    const ah = parseInt(a.slice(1), 16), bh = parseInt(b.slice(1), 16);
+    const ar = (ah >> 16) & 0xff, ag = (ah >> 8) & 0xff, ab = ah & 0xff;
+    const br = (bh >> 16) & 0xff, bg = (bh >> 8) & 0xff, bb = bh & 0xff;
+    const rr = Math.round(ar + (br - ar) * t);
+    const rg = Math.round(ag + (bg - ag) * t);
+    const rb = Math.round(ab + (bb - ab) * t);
+    return '#' + ((1 << 24) | (rr << 16) | (rg << 8) | rb).toString(16).slice(1);
+  }
+  function layoutSkillsStage() {
+    if (!skillGroups.length || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const h = skillsSection.offsetHeight;
+    sStagePinned = h < innerHeight * 0.85;
+    skillsStage.classList.toggle('pinned', sStagePinned);
+    if (sStagePinned) {
+      sStageExtra = Math.round(innerHeight * 1.15);
+      sStageTop = Math.max(60, Math.round((innerHeight - h) / 2));
+      skillsSection.style.top = sStageTop + 'px';
+      skillsStage.style.height = (h + sStageExtra) + 'px';
+    } else {
+      skillsSection.style.top = '';
+      skillsStage.style.height = '';
+    }
+    skillsReveal();
+  }
+  function skillsReveal() {
+    if (!skillGroups.length || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let progress;
+    if (sStagePinned) {
+      const r = skillsStage.getBoundingClientRect();
+      progress = (sStageTop - r.top) / (sStageExtra * 0.88);
+    } else {
+      const r = skillsSection.getBoundingClientRect();
+      progress = (innerHeight * 0.72 - r.top) / (r.height * 1.15);
+    }
+    const lead = 2;
+    const pos = Math.min(1, Math.max(0, progress)) * (skillGroups.length + lead);
+    skillGroups.forEach((group, i) => {
+      const t = Math.min(1, Math.max(0, (pos - i) / lead));
+      group.querySelectorAll('.chip').forEach(chip => {
+        chip.style.backgroundColor = lerpColor('#252a22', '#a5b699', t);
+        chip.style.color = lerpColor('#a5b699', '#252a22', t);
+        chip.style.borderColor = t > 0.5 ? '#252a22' : 'transparent';
+      });
+    });
+  }
+  addEventListener('scroll', () => requestAnimationFrame(skillsReveal), { passive: true });
+  addEventListener('resize', layoutSkillsStage);
+  addEventListener('load', layoutSkillsStage);
+  layoutSkillsStage();
 
   // projects — record crate
   const PROJECTS = [
