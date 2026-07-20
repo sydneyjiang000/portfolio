@@ -197,6 +197,15 @@
   .factCard li span:last-child{text-align:right;font-weight:600;}
   @media(max-width:720px){ .aboutGrid{grid-template-columns:1fr;} }
 
+  /* skills — chips left, particle SKILLS right */
+  .skillsGrid{display:grid;grid-template-columns:1.15fr 1fr;gap:56px;align-items:center;}
+  .skillsArt{position:relative;}
+  #skillsCanvas{display:block;width:100%;}
+  @media(max-width:900px){
+    .skillsGrid{grid-template-columns:1fr;gap:24px;}
+    .skillsArt{order:-1;}
+  }
+
   /* experience timeline */
   .timeline{position:relative;padding-left:28px;}
   .timeline::before{
@@ -444,9 +453,8 @@
 
   <section id="skills">
     <div class="wrap">
-      <h2><span class="num">02</span>Skills</h2>
-      <p class="sectionLede">The toolkit behind the work.</p>
-      <div class="reveal">
+      <div class="skillsGrid reveal">
+        <div>
         <div class="skillGroup">
           <h3>Programming</h3>
           <div class="chips">
@@ -472,6 +480,11 @@
           <div class="chips">
             <span class="chip">Mandarin (native)</span><span class="chip">English (fluent)</span>
           </div>
+        </div>
+        </div>
+        <div class="skillsArt">
+          <h2 class="srOnly">Skills</h2>
+          <canvas id="skillsCanvas" aria-hidden="true"></canvas>
         </div>
       </div>
     </div>
@@ -747,10 +760,9 @@
     })(aboutText);
     rws = [...aboutText.querySelectorAll('.rw')];
   }
-  // particle ABOUT: rasterize the word offscreen, spawn a dot per sampled
-  // pixel; dots flee the pointer and spring home when it leaves
-  (function () {
-    const cv = document.getElementById('aboutCanvas');
+  // particle wordmarks: rasterize the word(s) offscreen, spawn a dot per
+  // sampled pixel; dots flee the pointer and spring home when it leaves
+  function particleWord(cv, lines) {
     if (!cv) return;
     const pctx = cv.getContext('2d');
     const pReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -762,18 +774,17 @@
       const off = document.createElement('canvas');
       const o = off.getContext('2d');
       const font = (px) => `700 ${px}px "Palatino Linotype","Book Antiqua",Palatino,Georgia,serif`;
-      // "ABOUT" fills the column width; "ME" sits tight on the second line
       o.font = font(100);
-      const f = Math.min(210, 100 * (W / o.measureText('ABOUT').width) * 0.98);
+      const widest = Math.max(...lines.map(t => o.measureText(t).width));
+      const f = Math.min(210, 100 * (W / widest) * 0.98);
       const gap = f * 0.12;
-      H = Math.ceil(f * 1.72);
+      H = Math.ceil(lines.length === 1 ? f * 0.92 : f * 1.72);
       cv.style.height = H + 'px';
       cv.width = W * dpr; cv.height = H * dpr;
       off.width = W; off.height = H;
       o.fillStyle = '#fff'; o.textAlign = 'left'; o.textBaseline = 'alphabetic';
       o.font = font(f);
-      o.fillText('ABOUT', 0, f * 0.8);
-      o.fillText('ME', 0, f * 1.52 + gap);
+      lines.forEach((t, i) => o.fillText(t, 0, f * 0.8 + i * (f * 0.72 + gap)));
       const img = o.getImageData(0, 0, W, H).data;
       parts = [];
       // translucent greens picked to sit inside the water backdrop
@@ -786,9 +797,9 @@
             r: Math.random() < .16 ? 2.1 : 1.4 });
         }
       }
-      if (!running) drawOnce();
+      if (!running) step();
     }
-    function step(draw) {
+    function step() {
       pctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       pctx.clearRect(0, 0, W, H);
       const R = 85, R2 = R * R;
@@ -803,7 +814,6 @@
         pctx.fillRect(p.x, p.y, p.r, p.r);
       }
     }
-    function drawOnce() { step(); }
     function loop() { if (!running) return; step(); requestAnimationFrame(loop); }
     new IntersectionObserver(es => es.forEach(e => {
       const was = running; running = e.isIntersecting && !pReduced;
@@ -817,7 +827,9 @@
     addEventListener('resize', build);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(build);
     build();
-  })();
+  }
+  particleWord(document.getElementById('aboutCanvas'), ['ABOUT', 'ME']);
+  particleWord(document.getElementById('skillsCanvas'), ['SKILLS']);
 
   // pin the About section mid-screen while the text inks in (~2 swipes),
   // then release; falls back to flow-based reveal when it doesn't fit
