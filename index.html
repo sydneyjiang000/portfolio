@@ -975,7 +975,7 @@
     sStagePinned = h < innerHeight * 0.85;
     skillsStage.classList.toggle('pinned', sStagePinned);
     if (sStagePinned) {
-      sStageExtra = Math.round(innerHeight * 1.15);
+      sStageExtra = Math.round(innerHeight * 2.0);
       sStageTop = Math.max(60, Math.round((innerHeight - h) / 2));
       skillsSection.style.top = sStageTop + 'px';
       skillsStage.style.height = (h + sStageExtra) + 'px';
@@ -990,12 +990,12 @@
     let progress;
     if (sStagePinned) {
       const r = skillsStage.getBoundingClientRect();
-      progress = (sStageTop - r.top) / (sStageExtra * 0.88);
+      progress = (sStageTop - r.top) / (sStageExtra * 0.92);
     } else {
       const r = skillsSection.getBoundingClientRect();
       progress = (innerHeight * 0.72 - r.top) / (r.height * 1.15);
     }
-    const lead = 2;
+    const lead = 3;
     const pos = Math.min(1, Math.max(0, progress)) * (skillGroups.length + lead);
     skillGroups.forEach((group, i) => {
       const t = Math.min(1, Math.max(0, (pos - i) / lead));
