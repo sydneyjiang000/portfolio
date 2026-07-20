@@ -174,8 +174,9 @@
   .sectionLede{color:var(--ink-soft);margin:0 0 36px;max-width:640px;}
 
   /* about — giant particle ABOUT on the left, copy on the right */
-  .aboutGrid{display:grid;grid-template-columns:1.08fr 1fr;gap:56px;align-items:center;}
-  .aboutArt{position:relative;}
+  .aboutGrid{display:grid;grid-template-columns:1.2fr 1fr;gap:56px;align-items:center;}
+  /* bleed the wordmark into the page's left margin for extra size */
+  .aboutArt{position:relative;margin-left:clamp(-150px, calc((912px - 100vw) / 2 * .62), 0px);}
   #aboutCanvas{display:block;width:100%;cursor:default;}
   .srOnly{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
   @media(max-width:900px){ .aboutGrid{grid-template-columns:1fr;gap:20px;} }
@@ -198,8 +199,9 @@
   @media(max-width:720px){ .aboutGrid{grid-template-columns:1fr;} }
 
   /* skills — chips left, particle SKILLS right */
-  .skillsGrid{display:grid;grid-template-columns:1.15fr 1fr;gap:56px;align-items:center;}
-  .skillsArt{position:relative;}
+  .skillsGrid{display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:center;}
+  /* mirror bleed: SKILLS pushes into the right page margin */
+  .skillsArt{position:relative;margin-right:clamp(-150px, calc((912px - 100vw) / 2 * .62), 0px);}
   #skillsCanvas{display:block;width:100%;}
   @media(max-width:900px){
     .skillsGrid{grid-template-columns:1fr;gap:24px;}
