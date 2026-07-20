@@ -696,8 +696,8 @@
     const strap = document.getElementById('strapPath');
     const stitch = document.getElementById('strapStitch');
     const AX = 210, AY = -24;           // strap anchor (above the top edge)
-    const L0 = 130;                      // rest strap length
-    let L = L0, theta = 0.14, omega = 0, dragging = false, lastT = performance.now(), t = 0;
+    const L0 = 88;                       // rest strap length
+    let L = L0, vL = 0, theta = 0.14, omega = 0, dragging = false, lastT = performance.now(), t = 0;
     let dragPrev = null;
 
     function frame(now) {
@@ -707,7 +707,12 @@
         const alpha = -(2400 / L) * Math.sin(theta - breeze) - 1.1 * omega;
         omega += alpha * dt;
         theta += omega * dt;
-        L += (L0 - L) * Math.min(1, dt * 6); // relax any drag stretch
+        // elastic strap: the length itself is a lightly-damped spring, and
+        // fast swings stretch it centrifugally
+        const Lrest = L0 + 8 + Math.min(48, omega * omega * L * 0.012);
+        vL += (Lrest - L) * 90 * dt;
+        vL *= Math.max(0, 1 - 2.2 * dt);
+        L += vL * dt;
       }
       const bx = AX + Math.sin(theta) * L, by = AY + Math.cos(theta) * L;
       const mx = AX + Math.sin(theta) * L * 0.5, my = AY + Math.cos(theta) * L * 0.52;
@@ -728,11 +733,13 @@
       if (!dragging) return;
       const r = lan.getBoundingClientRect();
       const px = e.clientX - r.left, py = e.clientY - r.top;
-      const dx = px - AX, dy = Math.max(40, py - AY);
+      const dx = px - AX, dy = Math.max(30, py - AY);
       theta = Math.atan2(dx, dy);
-      L = Math.min(L0 + 70, Math.max(L0 - 40, Math.hypot(dx, dy)));
+      const prevL = L;
+      L = Math.min(L0 + 170, Math.max(L0 - 35, Math.hypot(dx, dy)));
       const now = performance.now(), dt = Math.max(8, now - dragPrev.t) / 1000;
       omega = (theta - dragPrev.theta) / dt * 0.55;
+      vL = (L - prevL) / dt * 0.6;
       dragPrev = { theta, t: now };
     });
     const release = () => { dragging = false; badge.classList.remove('grabbing'); };
