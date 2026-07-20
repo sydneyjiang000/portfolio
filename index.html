@@ -173,8 +173,12 @@
   h2 .num{font-size:14px;color:var(--ink-faint);font-family:var(--sans);letter-spacing:2px;font-weight:400;}
   .sectionLede{color:var(--ink-soft);margin:0 0 36px;max-width:640px;}
 
-  /* about */
-  .aboutGrid{max-width:680px;}
+  /* about — giant particle ABOUT on the left, copy on the right */
+  .aboutGrid{display:grid;grid-template-columns:320px 1fr;gap:56px;align-items:center;}
+  .aboutArt{position:relative;}
+  #aboutCanvas{display:block;width:100%;cursor:default;}
+  .srOnly{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;}
+  @media(max-width:900px){ .aboutGrid{grid-template-columns:1fr;gap:20px;} }
   .aboutGrid p{margin:0 0 16px;color:var(--ink);}
   .mobileFacts{display:none;margin-top:28px;}
   @media(max-width:1100px){ .mobileFacts{display:block;} }
@@ -413,8 +417,11 @@
   <div id="aboutStage">
   <section id="about">
     <div class="wrap">
-      <h2><span class="num">01</span>About</h2>
       <div class="aboutGrid reveal">
+        <div class="aboutArt">
+          <h2 class="srOnly">About</h2>
+          <canvas id="aboutCanvas" aria-hidden="true"></canvas>
+        </div>
         <div class="aboutText">
           <p>I move fast, stay curious, and follow through — traits forged on the fast-paced trading floors and sharpened within an AI startup. That mix gave me classic business analytics fundamentals, a practical read on where AI is headed, and the instinct to put it to work without cutting corners.</p>
           <p>Outside of work I keep building — academic models you can explore, tools that solve real problems. The AI world moves fast enough that there's no fixed playbook, so I learn as I go and use AI itself to go after problems nobody's solved yet.</p>
@@ -740,6 +747,77 @@
     })(aboutText);
     rws = [...aboutText.querySelectorAll('.rw')];
   }
+  // particle ABOUT: rasterize the word offscreen, spawn a dot per sampled
+  // pixel; dots flee the pointer and spring home when it leaves
+  (function () {
+    const cv = document.getElementById('aboutCanvas');
+    if (!cv) return;
+    const pctx = cv.getContext('2d');
+    const pReduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let parts = [], W = 0, H = 0, dpr = 1, running = false;
+    const mouse = { x: -9999, y: -9999 };
+    function build() {
+      dpr = Math.min(devicePixelRatio || 1, 2);
+      const vertical = innerWidth > 900;
+      W = cv.clientWidth || 320; H = vertical ? 540 : 150;
+      cv.style.height = H + 'px';
+      cv.width = W * dpr; cv.height = H * dpr;
+      const off = document.createElement('canvas');
+      off.width = W; off.height = H;
+      const o = off.getContext('2d');
+      o.fillStyle = '#fff'; o.textAlign = 'center'; o.textBaseline = 'middle';
+      const font = (px) => `700 ${px}px "Palatino Linotype","Book Antiqua",Palatino,Georgia,serif`;
+      if (vertical) {
+        o.translate(W / 2, H / 2); o.rotate(-Math.PI / 2);
+        o.font = font(Math.min(158, W * 0.66));
+        o.fillText('ABOUT', 0, 0);
+      } else {
+        o.font = font(Math.min(110, W / 4.6));
+        o.fillText('ABOUT', W / 2, H / 2);
+      }
+      const img = o.getImageData(0, 0, W, H).data;
+      parts = [];
+      const cols = ['#e8e4dd', '#e8e4dd', '#e8e4dd', '#d8d4cc', '#8a9a7e', '#c9838a'];
+      for (let y = 0; y < H; y += 4) for (let x = 0; x < W; x += 4) {
+        if (img[(y * W + x) * 4 + 3] > 128) {
+          parts.push({ hx: x, hy: y, x, y, vx: 0, vy: 0,
+            c: cols[(Math.random() * cols.length) | 0],
+            r: Math.random() < .16 ? 2.1 : 1.4 });
+        }
+      }
+      if (!running) drawOnce();
+    }
+    function step(draw) {
+      pctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      pctx.clearRect(0, 0, W, H);
+      const R = 85, R2 = R * R;
+      for (const p of parts) {
+        if (!pReduced) {
+          const dx = p.x - mouse.x, dy = p.y - mouse.y, d2 = dx * dx + dy * dy;
+          if (d2 < R2) { const d = Math.sqrt(d2) || 1, f = (R - d) / R; p.vx += dx / d * f * 7; p.vy += dy / d * f * 7; }
+          p.vx += (p.hx - p.x) * 0.055; p.vy += (p.hy - p.y) * 0.055;
+          p.vx *= 0.86; p.vy *= 0.86; p.x += p.vx; p.y += p.vy;
+        }
+        pctx.fillStyle = p.c;
+        pctx.fillRect(p.x, p.y, p.r, p.r);
+      }
+    }
+    function drawOnce() { step(); }
+    function loop() { if (!running) return; step(); requestAnimationFrame(loop); }
+    new IntersectionObserver(es => es.forEach(e => {
+      const was = running; running = e.isIntersecting && !pReduced;
+      if (running && !was) requestAnimationFrame(loop);
+    })).observe(cv);
+    cv.addEventListener('pointermove', e => {
+      const r = cv.getBoundingClientRect();
+      mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top;
+    });
+    cv.addEventListener('pointerleave', () => { mouse.x = -9999; mouse.y = -9999; });
+    addEventListener('resize', build);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(build);
+    build();
+  })();
+
   // pin the About section mid-screen while the text inks in (~2 swipes),
   // then release; falls back to flow-based reveal when it doesn't fit
   const aboutStage = document.getElementById('aboutStage');
