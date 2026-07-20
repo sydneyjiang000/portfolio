@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sydney Jiang · Business × Tech × AI</title>
-<meta name="description" content="Sydney (Xin Ni) Jiang — problem-solver at the intersection of business, technology, and AI. From banking to investment research to an AI startup. Columbia MSBA, Boston University Economics.">
+<meta name="description" content="Sydney (Xin Ni) Jiang, problem-solver at the intersection of business, technology, and AI. From banking to investment research to an AI startup. Columbia MSBA, Boston University Economics.">
 <style>
   :root{
     --bg:#17171a;
@@ -163,7 +163,7 @@
   /* ---------- sections ---------- */
   section{padding:64px 0;}
   section + section, #aboutStage + section, #skillsStage + section{border-top:1px solid var(--line);}
-  /* about pins mid-screen while its text inks in, then releases */
+  /* about & skills pin mid-screen while their content inks in, then release */
   #aboutStage, #skillsStage{position:relative;}
   #aboutStage.pinned #about, #skillsStage.pinned #skills{position:sticky;}
   h2{
@@ -344,25 +344,16 @@
   @media(max-width:720px){ .eduGrid{grid-template-columns:1fr;} }
 
   /* skills */
-  .skillGroup{margin-bottom:26px;}
+  .skillGroup{margin-bottom:16px;}
   .skillGroup:last-child{margin-bottom:0;}
   .skillGroup h3{
     font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--sage-deep);
-    margin:0 0 12px;display:flex;align-items:center;gap:10px;
+    margin:0 0 9px;display:flex;align-items:center;gap:10px;
   }
   .skillGroup h3::after{content:"";flex:1;height:1px;background:var(--line);}
-  .skillGroup .chips .chip{
-    font-size:13px;padding:7px 15px;
-    transition:background-color .35s,color .35s,border-color .35s;
-  }
-  .skillGroup .chips .chip.lit{background:var(--sage-deep);color:var(--sage-tint);border-color:var(--sage-tint);}
-  @media(max-width:900px){
-    .skillGroup .chips .chip{transition-duration:.18s;}
-  }
-  @media(prefers-reduced-motion:reduce){
-    .skillGroup .chips .chip{transition:none;}
-    .skillGroup .chips .chip.lit{background:var(--sage-deep);color:var(--sage-tint);border-color:var(--sage-tint);}
-  }
+  .skillGroup .chips .chip{font-size:13px;padding:7px 15px;}
+  /* keep the pinned skills panel compact so it fits shorter laptop screens */
+  #skillsStage.pinned #skills{padding-top:52px;padding-bottom:52px;}
 
   /* contact */
   .contact{text-align:center;padding:80px 0 70px;}
@@ -431,24 +422,24 @@
   <div class="wrap">
     <div class="eyebrow">Business × Tech × AI</div>
     <h1>Xin&nbsp;Ni (Sydney) Jiang</h1>
-    <p class="heroTag">Problem-solver at the intersection of <em>business, technology, and AI</em> — with a journey from banking to investment research to an AI startup.</p>
+    <p class="heroTag">Problem-solver at the intersection of <em>business, technology, and AI</em>, with a journey from banking to investment research to an AI startup.</p>
     <div class="heroMeta">
       <a href="#contact"><svg viewBox="0 0 24 24"><path d="M12 21c-4-4.5-7-8-7-11.5A7 7 0 0 1 19 9.5C19 13 16 16.5 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>New York, NY</a>
       <a href="mailto:sydneyjiang00@gmail.com"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>sydneyjiang00@gmail.com</a>
       <a href="https://www.linkedin.com/in/sydney-jiang-4a4721296/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10v7M8 7v.01M12 17v-4a2.5 2.5 0 0 1 5 0v4"/></svg>LinkedIn</a>
       <a href="https://github.com/sydneyjiang000" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 0 0-2.85 17.54c.45.08.62-.2.62-.44v-1.54c-2.5.54-3.03-1.2-3.03-1.2-.41-1.04-1-1.32-1-1.32-.82-.56.06-.55.06-.55.9.06 1.38.93 1.38.93.8 1.38 2.11.98 2.63.75.08-.58.31-.98.57-1.2-2-.23-4.1-1-4.1-4.45 0-.98.35-1.78.93-2.41-.1-.23-.4-1.15.08-2.4 0 0 .76-.24 2.48.92a8.6 8.6 0 0 1 4.5 0c1.72-1.16 2.47-.92 2.47-.92.5 1.25.19 2.17.1 2.4.58.63.92 1.43.92 2.41 0 3.47-2.1 4.22-4.11 4.44.32.28.61.83.61 1.67v2.47c0 .24.16.53.63.44A9 9 0 0 0 12 3z"/></svg>GitHub</a>
     </div>
-    <div class="authBadge">No H-1B sponsorship required — STEM OPT through 2031, E-3 visa eligibility thereafter</div>
+    <div class="authBadge">No H-1B sponsorship required, STEM OPT through 2031, E-3 visa eligibility thereafter</div>
     <div class="heroBtns">
       <a class="btn primary" href="mailto:sydneyjiang00@gmail.com">Get in touch</a>
       <a class="btn ghost" href="#experience">See my work ↓</a>
     </div>
 
     <div class="stats reveal">
-      <div class="stat"><b>0.82</b><span>AUC — churn prediction model in production use</span></div>
+      <div class="stat"><b>0.82</b><span>AUC, churn prediction model in production use</span></div>
       <div class="stat"><b>+22%</b><span>campaign CTR from segmentation-driven ad strategy</span></div>
       <div class="stat"><b>30M+</b><span>customer records modeled for credit default risk</span></div>
-      <div class="stat"><b>3.91</b><span>GPA — BA Economics, Boston University</span></div>
+      <div class="stat"><b>3.91</b><span>GPA, BA Economics, Boston University</span></div>
     </div>
   </div>
 </header>
@@ -463,8 +454,8 @@
           <canvas id="aboutCanvas" aria-hidden="true"></canvas>
         </div>
         <div class="aboutText">
-          <p>I move fast, stay curious, and follow through — traits forged on the fast-paced trading floors and sharpened within an AI startup. That mix gave me classic business analytics fundamentals, a practical read on where AI is headed, and the instinct to put it to work without cutting corners.</p>
-          <p>Outside of work I keep building — academic models you can explore, tools that solve real problems. The AI world moves fast enough that there's no fixed playbook, so I learn as I go and use AI itself to go after problems nobody's solved yet.</p>
+          <p>I move fast, stay curious, and follow through, traits forged on the fast-paced trading floors and sharpened within an AI startup. That mix gave me classic business analytics fundamentals, a practical read on where AI is headed, and the instinct to put it to work without cutting corners.</p>
+          <p>Outside of work I keep building, academic models you can explore, tools that solve real problems. The AI world moves fast enough that there's no fixed playbook, so I learn as I go and use AI itself to go after problems nobody's solved yet.</p>
         </div>
         <div class="factCard mobileFacts">
           <h3>Quick facts</h3>
@@ -536,7 +527,7 @@
             <li>Engineered a customer segmentation model in Python (pandas, scikit-learn) on <b>50K+ user interactions</b>, surfacing 4 key personas that shaped targeted ad strategy and lifted campaign CTR by <b>22%+</b>.</li>
             <li>Built a churn prediction model (logistic regression + random forest) reaching <b>AUC 0.82</b>; the marketing team adopted its retention recommendations to prioritize high-risk segments.</li>
             <li>Designed A/B tests across 3 landing-page variants, identifying the highest-converting registration funnel and driving an <b>18% lift in conversion rate</b>.</li>
-            <li>Automated data pipelines connecting Google Ads and Search Console APIs to live Tableau dashboards — replacing <b>15 hours/week</b> of manual reporting.</li>
+            <li>Automated data pipelines connecting Google Ads and Search Console APIs to live Tableau dashboards, replacing <b>15 hours/week</b> of manual reporting.</li>
           </ul>
           <div class="chips">
             <span class="chip">Python</span><span class="chip">scikit-learn</span><span class="chip">A/B Testing</span><span class="chip">Tableau</span>
@@ -579,7 +570,7 @@
   <section id="projects">
     <div class="wrap">
       <h2><span class="num">04</span>Projects</h2>
-      <p class="sectionLede">Pick a record. Every sleeve is a real analysis — results and visuals right on the cover.</p>
+      <p class="sectionLede">Pick a record. Every sleeve is a real analysis, results and visuals right on the cover.</p>
 
       <div class="player reveal">
         <div class="playerVisual"><img id="npImage" src="assets/projects/payment.webp" alt="Project visualization"></div>
@@ -600,7 +591,7 @@
   <section id="research">
     <div class="wrap">
       <h2><span class="num">05</span>Research</h2>
-      <p class="sectionLede">Empirical economics research at Boston University — from global trade microdata to earnings-call text.</p>
+      <p class="sectionLede">Empirical economics research at Boston University, from global trade microdata to earnings-call text.</p>
       <div class="researchCard reveal">
         <svg class="researchIllust" viewBox="0 0 220 220" aria-hidden="true">
           <circle cx="150" cy="70" r="130" stroke="var(--sage)" stroke-width="1.2" fill="none" opacity=".18"/>
@@ -669,7 +660,7 @@
       <div class="eduGrid">
         <div class="eduCard reveal">
           <p class="school">Columbia University</p>
-          <p class="degree">MS in Industrial Engineering — Business Analytics (MSBA)</p>
+          <p class="degree">MS in Industrial Engineering, Business Analytics (MSBA)</p>
           <div class="jobMeta">New York, NY · Sep 2026 – Jan 2028 (expected)</div>
           <p>Coursework: Optimization Analytics, Machine Learning, Advanced Visualizations, Gen AI &amp; AI Strategies, Corporate Finance, Statistical Modeling, Data Science.</p>
         </div>
@@ -677,7 +668,7 @@
           <p class="school">Boston University</p>
           <p class="degree">BA in Economics · Minor in Statistics</p>
           <div class="jobMeta">Boston, MA · Sep 2023 – May 2026 · GPA 3.91/4.0</div>
-          <p>Foundation in econometrics, statistical inference, and economic theory — plus research assistantship in empirical industrial organization.</p>
+          <p>Foundation in econometrics, statistical inference, and economic theory, plus research assistantship in empirical industrial organization.</p>
         </div>
       </div>
     </div>
@@ -687,7 +678,7 @@
   <section id="contact" class="contact">
     <div class="wrap reveal">
       <h2>Let's talk data.</h2>
-      <p>I'm open to analyst and data-science opportunities in New York and beyond. No H-1B sponsorship required — STEM OPT through 2031, with E-3 visa eligibility thereafter.</p>
+      <p>I'm open to analyst and data-science opportunities in New York and beyond. No H-1B sponsorship required, STEM OPT through 2031, with E-3 visa eligibility thereafter.</p>
       <div class="heroBtns" style="justify-content:center;">
         <a class="btn primary" href="mailto:sydneyjiang00@gmail.com">sydneyjiang00@gmail.com</a>
         <a class="btn ghost" href="https://www.linkedin.com/in/sydney-jiang-4a4721296/" target="_blank" rel="noopener">LinkedIn</a>
@@ -955,56 +946,47 @@
   addEventListener('load', layoutAboutStage);
   layoutAboutStage();
 
-  // skills pin + chip reveal: each skill group lights up row by row as you scroll
+  // pin the Skills section mid-screen while its chips ink in group by group
+  // (~1 swipe), then release — same "scroll it all before it lets go" feel
+  // as About; falls back to the flow-based grid reveal when it doesn't fit
   const skillsStage = document.getElementById('skillsStage');
   const skillsSection = document.getElementById('skills');
-  const skillGroups = [...document.querySelectorAll('#skills .skillGroup')];
-  let sStageExtra = 0, sStageTop = 0, sStagePinned = false;
-  function lerpColor(a, b, t) {
-    const ah = parseInt(a.slice(1), 16), bh = parseInt(b.slice(1), 16);
-    const ar = (ah >> 16) & 0xff, ag = (ah >> 8) & 0xff, ab = ah & 0xff;
-    const br = (bh >> 16) & 0xff, bg = (bh >> 8) & 0xff, bb = bh & 0xff;
-    const rr = Math.round(ar + (br - ar) * t);
-    const rg = Math.round(ag + (bg - ag) * t);
-    const rb = Math.round(ab + (bb - ab) * t);
-    return '#' + ((1 << 24) | (rr << 16) | (rg << 8) | rb).toString(16).slice(1);
-  }
+  const skillChips = skillsSection ? [...skillsSection.querySelectorAll('.chip')] : [];
+  const skillsMotion = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let skStageExtra = 0, skStageTop = 0, skStagePinned = false;
   function layoutSkillsStage() {
-    if (!skillGroups.length || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!skillChips.length || !skillsMotion) return;
+    // toggle .pinned first so the compact pinned padding applies, then
+    // measure — otherwise we'd test the roomier un-pinned height
+    skillsStage.classList.add('pinned');
     const h = skillsSection.offsetHeight;
-    // pin whenever there's at least 120px of scroll room below the section
-    sStagePinned = h + 120 < innerHeight;
-    skillsStage.classList.toggle('pinned', sStagePinned);
-    if (sStagePinned) {
-      sStageExtra = Math.round(Math.max(innerHeight * 2.0, innerHeight - h + 200));
-      sStageTop = Math.max(60, Math.round((innerHeight - h) / 2));
-      skillsSection.style.top = sStageTop + 'px';
-      skillsStage.style.height = (h + sStageExtra) + 'px';
+    // pin whenever it fits under the 60px nav with a little breathing room
+    skStagePinned = h < innerHeight - 68;
+    skillsStage.classList.toggle('pinned', skStagePinned);
+    if (skStagePinned) {
+      skStageExtra = Math.round(innerHeight * 1.05);
+      // center in the area below the nav; never tuck under it
+      skStageTop = Math.max(72, Math.round((innerHeight - h) / 2));
+      skillsSection.style.top = skStageTop + 'px';
+      skillsStage.style.height = (h + skStageExtra) + 'px';
     } else {
       skillsSection.style.top = '';
       skillsStage.style.height = '';
+      skillChips.forEach(c => { c.style.opacity = ''; c.style.transform = ''; });
     }
     skillsReveal();
   }
   function skillsReveal() {
-    if (!skillGroups.length || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    let progress;
-    if (sStagePinned) {
-      const r = skillsStage.getBoundingClientRect();
-      progress = (sStageTop - r.top) / (sStageExtra * 0.92);
-    } else {
-      const r = skillsSection.getBoundingClientRect();
-      progress = (innerHeight * 0.72 - r.top) / (r.height * 1.15);
-    }
-    const lead = 3;
-    const pos = Math.min(1, Math.max(0, progress)) * (skillGroups.length + lead);
-    skillGroups.forEach((group, i) => {
+    if (!skillChips.length || !skStagePinned) return;
+    const r = skillsStage.getBoundingClientRect();
+    // finish at 88% of the pinned distance so every chip is lit before release
+    const progress = (skStageTop - r.top) / (skStageExtra * 0.88);
+    const lead = 5;
+    const pos = Math.min(1, Math.max(0, progress)) * (skillChips.length + lead);
+    skillChips.forEach((c, i) => {
       const t = Math.min(1, Math.max(0, (pos - i) / lead));
-      group.querySelectorAll('.chip').forEach(chip => {
-        chip.style.backgroundColor = lerpColor('#252a22', '#a5b699', t);
-        chip.style.color = lerpColor('#a5b699', '#252a22', t);
-        chip.style.borderColor = t > 0.5 ? '#252a22' : 'transparent';
-      });
+      c.style.opacity = (0.12 + 0.88 * t).toFixed(3);
+      c.style.transform = `translateY(${((1 - t) * 8).toFixed(2)}px)`;
     });
   }
   addEventListener('scroll', () => requestAnimationFrame(skillsReveal), { passive: true });
@@ -1026,7 +1008,7 @@
       ]
     },
     {
-      title: 'Voice of the User — Survey Dashboard',
+      title: 'Voice of the User, Survey Dashboard',
       cover: 'assets/projects/survey.webp',
       result: '1,840 people answered in their own words, I wanted to know what they were actually trying to tell us.',
       desc: 'Cleans messy survey data (merging inconsistent free-text answers, coding open-ended feature requests into themes) and renders a fully interactive dashboard. Synthetic-data demo of a real analysis built during my internship.',
@@ -1040,7 +1022,7 @@
       title: 'Text Style Classifier',
       cover: 'assets/projects/textstyle.webp',
       result: 'I could\'ve imported a library and gotten this running in ten minutes. I built it from scratch instead, because I wanted to actually understand what \'style\' means to a model.',
-      desc: 'Authorship attribution built from scratch in pure Python, no ML libraries: each text becomes a statistical style model, and log-likelihood scores across five features decide which source an unknown text resembles — naive-Bayes mechanics, hand-rolled.',
+      desc: 'Authorship attribution built from scratch in pure Python, no ML libraries: each text becomes a statistical style model, and log-likelihood scores across five features decide which source an unknown text resembles, naive-Bayes mechanics, hand-rolled.',
       chips: ['Pure Python', 'Log-likelihood · Naive Bayes', 'NLP from Scratch'],
       links: [
         { label: 'GitHub', url: 'https://github.com/sydneyjiang000/text-style-classifier' }
